@@ -1,4 +1,3 @@
-import Navbar from "../components/Navbar";
 
 const AddEvent = () => {
   return (
