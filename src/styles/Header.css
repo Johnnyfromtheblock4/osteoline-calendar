@@ -4,4 +4,32 @@
   color: #ef9011;
   text-transform: uppercase;
   letter-spacing: 0.1rem;
+  font-weight: bold;
+}
+
+.custom-select {
+  width: auto;
+  min-width: 100px;
+  background-color: #1e242d;
+  color: white;
+  border: 1px solid #ef9011;
+  border-radius: 0.5rem;
+  font-size: 1.4rem;
+  padding: 0.3rem 0.8rem;
+}
+
+.custom-select:focus {
+  border-color: #ffb84d;
+  box-shadow: 0 0 5px #ef9011;
+}
+
+/* RESPONSIVE  */
+@media (max-width: 500px) {
+  .heading {
+    font-size: 1.5rem;
+  }
+  .custom-select {
+    font-size: 1.2rem;
+    padding: 0.2rem 0.5rem;
+  }
 }
