@@ -1,11 +1,23 @@
 @import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 
+/* Reset di base */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   outline: none;
   font-family: "Comfortaa", sans-serif;
+}
+
+/* Colori di base solo sul body */
+body {
   background-color: black;
   color: white;
 }
+
+/* Container */
+.container-fluid {
+  width: 100%;
+  overflow: hidden;
+}
+

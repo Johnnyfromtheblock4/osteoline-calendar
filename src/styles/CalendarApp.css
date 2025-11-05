@@ -1,0 +1,44 @@
+/* Pulsanti di navigazione */
+.buttons i {
+  background-color: #ef9011;
+  border-radius: 50%;
+  font-size: 3rem;
+  cursor: pointer;
+}
+
+.weekdays {
+  width: 100%;
+  display: flex;
+}
+
+.weekdays span {
+  width: calc(100% / 7);
+  font-size: clamp(1rem, 0.8cqi, 1.3rem);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1 rem;
+  display: flex;
+  justify-content: center;
+  color: #00a3ff;
+}
+
+.days {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.days span {
+  font-size: calc(1.2rem, 1cqi, 1.6rem);
+  width: calc(100% / 7);
+  aspect-ratio: 1; /* stessa grandezza della width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 2rem;
+}
+
+.current-day {
+  background-color: #ef9011;
+  border-radius: 50%;
+}
