@@ -29,7 +29,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="container-fluid header">
+      <div className="container header mt-4">
         <div className="row mb-4 align-items-center">
           {/* LOGO */}
           <div className="col-6 col-lg-5 logo">
@@ -78,7 +78,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <div className="border-header"></div>
+      <div className="border-header full-width"></div>
     </>
   );
 };

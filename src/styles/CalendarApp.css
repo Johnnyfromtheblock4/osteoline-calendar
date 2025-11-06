@@ -30,7 +30,7 @@
 .days span {
   font-size: calc(1.2rem, 1cqi, 1.6rem);
   width: calc(100% / 7);
-  aspect-ratio: 1; /* stessa grandezza della width */
+  aspect-ratio: 4 / 2; /* stessa grandezza della width */
   display: flex;
   justify-content: center;
   align-items: center;

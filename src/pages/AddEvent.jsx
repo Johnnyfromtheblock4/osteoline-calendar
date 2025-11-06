@@ -1,3 +1,4 @@
+import "../styles/AddEvent.css";
 
 const AddEvent = () => {
   return (
