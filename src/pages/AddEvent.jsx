@@ -3,7 +3,7 @@ import "../styles/AddEvent.css";
 const AddEvent = () => {
   return (
     <>
-    <h1 className="add-event-title my-4 text-center">Aggiungi Evento</h1>
+      <h1 className="add-event-title my-4 text-center">Aggiungi Evento</h1>
       <div className="add-event-container container d-flex justify-content-center align-items-center mt-4">
         <div className="add-event-box row">
           {/* TITOLO */}
@@ -79,11 +79,8 @@ const AddEvent = () => {
           </div>
 
           {/* BOTTONI */}
-          <div className="col-12 d-flex justify-content-between align-items-center">
+          <div className="col-12 d-flex justify-content-center align-items-center">
             <button className="event-popup-btn">Aggiungi Evento</button>
-            <button className="close-event-popup-btn">
-              <i className="bx bx-x"></i>
-            </button>
           </div>
         </div>
       </div>
