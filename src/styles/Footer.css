@@ -1,0 +1,25 @@
+.footer-nav {
+  background-color: black;
+  border-top: 1px solid #ef9011;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.nav-icon {
+  color: white;
+  font-size: clamp(2.4rem, 2vw, 3rem);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.nav-icon:hover {
+  color: #ef9011;
+}
+
+.nav-icon.active {
+  color: #ef9011;
+}
+
+.app-wrapper {
+  padding-bottom: 70px; /* evita che il footer copra i contenuti */
+}

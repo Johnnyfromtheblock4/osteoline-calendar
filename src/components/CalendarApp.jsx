@@ -1,4 +1,5 @@
 import "../styles/CalendarApp.css";
+import Footer from "./Footer";
 import Header from "./Header";
 
 const CalendarApp = () => {
@@ -6,7 +7,7 @@ const CalendarApp = () => {
     <div className="calendar-app container-fluid my-5">
       <Header />
       <div className="container calendar">
-        <div className="row mt-5">
+        <div className="row mt-4">
           <div className="navigate-date d-flex col-6">
             <h2 className="month me-3">Maggio,</h2>
             <h2 className="year">2025</h2>

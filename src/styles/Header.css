@@ -1,3 +1,7 @@
+.border-header {
+  border-bottom: 1px solid #ef9011;
+}
+
 .heading {
   font-family: "Nunito", sans-serif;
   font-size: 2.4rem;
@@ -27,6 +31,9 @@
 @media (max-width: 500px) {
   .heading {
     font-size: 1.5rem;
+  }
+  .calendar-dates {
+    text-align: end;
   }
   .custom-select {
     font-size: 1.2rem;
