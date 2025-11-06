@@ -2,45 +2,92 @@ import "../styles/AddEvent.css";
 
 const AddEvent = () => {
   return (
-    <div>
-      <div className="events col-12 col-md-6">
-        <div className="event-popup">
-          <div className="time-input">
-            <div className="event-popup-time">Ora</div>
+    <>
+    <h1 className="add-event-title my-4 text-center">Aggiungi Evento</h1>
+      <div className="add-event-container container d-flex justify-content-center align-items-center mt-4">
+        <div className="add-event-box row">
+          {/* TITOLO */}
+          <div className="col-12 mb-3">
+            <label
+              htmlFor="eventTitle"
+              className="form-label text-uppercase fw-bold text-warning"
+            >
+              Titolo
+            </label>
             <input
-              type="number"
-              name="hours"
-              min={0}
-              max={24}
-              className="hours"
-            />
-            <input
-              type="number"
-              name="minutes"
-              min={0}
-              max={60}
-              className="minutes"
+              id="eventTitle"
+              type="text"
+              className="form-control custom-input"
+              placeholder="Inserisci titolo evento"
             />
           </div>
-          <textarea placeholder="Inserisci la descrizione dell'evento (Max 60 caratteri"></textarea>
-          <button className="event-popup-btn">Add Event</button>
-          <button className="close-event-popup-btn">
-            <i className="bx bx-x"></i>
-          </button>
-        </div>
-        <div className="event">
-          <div className="event-date-warapper">
-            <div className="event-date">15 Maggio 2025</div>
-            <div className="event-time">10:00</div>
+
+          {/* SWITCH "Tutto il giorno" */}
+          <div className="col-12 mb-3 d-flex align-items-center justify-content-between">
+            <label
+              className="form-check-label fw-bold"
+              htmlFor="switchCheckDefault"
+            >
+              Tutto il giorno
+            </label>
+            <div className="form-check form-switch">
+              <input
+                className="form-check-input custom-switch"
+                type="checkbox"
+                role="switch"
+                id="switchCheckDefault"
+              />
+            </div>
           </div>
-          <div className="event-text">Appuntamento Visconti</div>
-          <div className="event-buttons">
-            <i className="bx bxs-edit alt"></i>
-            <i className="bx bxs-message-alt-x"></i>
+
+          {/* ORARI */}
+          <div className="col-12 mb-3">
+            <label className="form-label text-uppercase fw-bold text-warning">
+              Orario
+            </label>
+            <div className="row">
+              <div className="col-6">
+                <div className="time-input">
+                  <span>Inizio</span>
+                  <div>
+                    <input type="number" min={0} max={24} className="hours" />
+                    <input type="number" min={0} max={60} className="minutes" />
+                  </div>
+                </div>
+              </div>
+              <div className="col-6">
+                <div className="time-input text-end">
+                  <span>Fine</span>
+                  <div>
+                    <input type="number" min={0} max={24} className="hours" />
+                    <input type="number" min={0} max={60} className="minutes" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* DESCRIZIONE */}
+          <div className="col-12 mb-4">
+            <label className="form-label text-uppercase fw-bold text-warning">
+              Descrizione
+            </label>
+            <textarea
+              className="form-control custom-textarea"
+              placeholder="Inserisci descrizione (Max 60 caratteri)"
+            ></textarea>
+          </div>
+
+          {/* BOTTONI */}
+          <div className="col-12 d-flex justify-content-between align-items-center">
+            <button className="event-popup-btn">Aggiungi Evento</button>
+            <button className="close-event-popup-btn">
+              <i className="bx bx-x"></i>
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

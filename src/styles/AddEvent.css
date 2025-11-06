@@ -1,0 +1,114 @@
+.add-event-title {
+  text-transform: uppercase;
+  font-family: "Nunito", sans-serif;
+  font-size: 2.4rem;
+  color: #ef9011;
+  letter-spacing: 0.1rem;
+  font-weight: bold;
+}
+
+.add-event-box {
+  width: 60%;
+  background-color: #1e242d;
+  border: 1px solid #ef9011;
+  border-radius: 1rem;
+  padding: 2rem 3rem;
+}
+
+/* Input e textarea */
+.custom-input,
+.custom-textarea {
+  background-color: #0f1319;
+  border: 1px solid #ef9011;
+  border-radius: 0.5rem;
+  padding: 0.8rem;
+  font-size: 1.4rem;
+}
+
+.custom-input::placeholder,
+.custom-textarea::placeholder {
+  color: #aaa;
+}
+
+.custom-input:focus,
+.custom-textarea:focus {
+  border-color: #ffb84d;
+  outline: none;
+}
+
+/* Switch */
+.custom-switch {
+  width: 5rem;
+  height: 1.5rem;
+  background-color: #ef9011 !important;
+  border: none;
+}
+
+/* Time input */
+.time-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.3rem;
+  color: white;
+}
+
+.hours,
+.minutes {
+  width: 4rem;
+  text-align: center;
+  background-color: #0f1319;
+  border: 1px solid #ef9011;
+  border-radius: 0.5rem;
+  color: white;
+  padding: 0.3rem;
+  margin-left: 0.3rem;
+}
+
+/* Bottoni */
+.event-popup-btn {
+  background-color: #ef9011;
+  color: #fff;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.event-popup-btn:hover {
+  background-color: #ffb84d;
+}
+
+.close-event-popup-btn {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+/* Responsività */
+@media (max-width: 768px) {
+  .add-event-box {
+    width: 75%;
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .add-event-box {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  .hours,
+  .minutes {
+    width: 3.5rem;
+  }
+
+  .event-popup-btn {
+    width: 100%;
+  }
+}
