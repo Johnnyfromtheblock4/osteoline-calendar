@@ -1,0 +1,22 @@
+.hour-counter-title {
+  text-transform: uppercase;
+  font-family: "Nunito", sans-serif;
+  font-size: 2.4rem;
+  color: #ef9011;
+  letter-spacing: 0.1rem;
+  font-weight: bold;
+}
+
+.hour-counter-box {
+  width: 60%;
+  background-color: #1e242d;
+  border: 1px solid #ef9011;
+  border-radius: 1rem;
+  padding: 2rem 3rem;
+}
+
+.hour-counter-subtitle {
+  text-transform: uppercase;
+  font-size: 1rem;
+  font-weight: bold;
+}
