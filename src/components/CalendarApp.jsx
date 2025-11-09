@@ -3,6 +3,21 @@ import Footer from "./Footer";
 import Header from "./Header";
 
 const CalendarApp = () => {
+  const daysOfWeek = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
+  const monthsOfYear = [
+    "Gennaio",
+    "Febbraio",
+    "Marzo",
+    "Aprile",
+    "Maggio",
+    "Giugno",
+    "Luglio",
+    "Agosto",
+    "Settembre",
+    "Ottobre",
+    "Novembre",
+    "Dicembre",
+  ];
   return (
     <>
       <Header />
