@@ -53,7 +53,9 @@ const CalendarApp = () => {
   const getEventsForDay = (day) => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    const dateStr = new Date(year, month, day).toISOString().split("T")[0];
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")}`;
 
     return events
       .filter((ev) => ev.date === dateStr)
@@ -96,7 +98,7 @@ const CalendarApp = () => {
               </div>
 
               {/* Giorni del mese */}
-              <div className="days">
+              <div className="days mt-3">
                 {daysInMonth.map((day, index) => {
                   if (day === null) return <span key={`empty-${index}`}></span>;
 
