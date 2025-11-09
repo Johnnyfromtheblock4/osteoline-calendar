@@ -43,17 +43,21 @@ const CalendarApp = () => {
     setCurrentDate(
       (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
     );
+
   const nextMonth = () =>
     setCurrentDate(
       (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
     );
 
+  // Ordina e filtra gli eventi per giorno
   const getEventsForDay = (day) => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    return events.filter(
-      (ev) => ev.date === new Date(year, month, day).toISOString().split("T")[0]
-    );
+    const dateStr = new Date(year, month, day).toISOString().split("T")[0];
+
+    return events
+      .filter((ev) => ev.date === dateStr)
+      .sort((a, b) => (a.startTime > b.startTime ? 1 : -1));
   };
 
   return (
@@ -61,7 +65,7 @@ const CalendarApp = () => {
       <Header />
       <div className="calendar-app container-fluid my-5">
         <div className="container calendar">
-          <div className="row mt-4">
+          <div className="row mt-4 align-items-center">
             <div className="navigate-date d-flex col-6 align-items-center">
               <h2 className="month me-2">
                 {monthsOfYear[currentDate.getMonth()]},
@@ -69,10 +73,21 @@ const CalendarApp = () => {
               <h2 className="year">{currentDate.getFullYear()}</h2>
             </div>
             <div className="buttons col-6 text-end">
-              <i className="bx bx-chevron-left me-3" onClick={prevMonth}></i>
-              <i className="bx bx-chevron-right" onClick={nextMonth}></i>
+              <i
+                className="bx bx-chevron-left me-3"
+                onClick={prevMonth}
+                role="button"
+                aria-label="Mese precedente"
+              ></i>
+              <i
+                className="bx bx-chevron-right"
+                onClick={nextMonth}
+                role="button"
+                aria-label="Mese successivo"
+              ></i>
             </div>
 
+            {/* Giorni della settimana */}
             <div className="col-12 mt-5">
               <div className="weekdays">
                 {daysOfWeek.map((day) => (
@@ -80,9 +95,10 @@ const CalendarApp = () => {
                 ))}
               </div>
 
+              {/* Giorni del mese */}
               <div className="days">
                 {daysInMonth.map((day, index) => {
-                  if (day === null) return <span key={index}></span>;
+                  if (day === null) return <span key={`empty-${index}`}></span>;
 
                   const isToday =
                     day === today.getDate() &&
@@ -92,19 +108,33 @@ const CalendarApp = () => {
                   const dayEvents = getEventsForDay(day);
 
                   return (
-                    <span key={index} className={isToday ? "current-day" : ""}>
-                      {day}
-                      {dayEvents.length > 0 && (
-                        <div
-                          className="event-title mt-1 text-truncate small fw-bold text-white px-1 py-0"
-                          style={{
-                            backgroundColor: dayEvents[0].color,
-                            borderRadius: "6px",
-                          }}
-                        >
-                          {dayEvents[0].title}
-                        </div>
-                      )}
+                    <span
+                      key={index}
+                      className={`day-cell ${isToday ? "current-day" : ""}`}
+                    >
+                      <div className="day-number">{day}</div>
+
+                      {/* Eventi multipli con scroll */}
+                      <div className="events-container">
+                        {dayEvents.map((ev, i) => (
+                          <div
+                            key={i}
+                            className="event-title text-white px-1 py-0 mt-1"
+                            style={{
+                              backgroundColor: ev.color,
+                              borderRadius: "6px",
+                              fontSize: "0.7rem",
+                              fontWeight: "600",
+                            }}
+                            title={`${ev.startTime} - ${ev.title}`}
+                          >
+                            {ev.startTime !== "00:00" &&
+                              ev.startTime !== "" &&
+                              `${ev.startTime} - `}
+                            {ev.title}
+                          </div>
+                        ))}
+                      </div>
                     </span>
                   );
                 })}

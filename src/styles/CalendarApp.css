@@ -1,11 +1,18 @@
-/* Pulsanti di navigazione */
+/* ---------- PULSANTI DI NAVIGAZIONE ---------- */
 .buttons i {
   background-color: #ef9011;
   border-radius: 50%;
-  font-size: 3rem;
+  font-size: 2.5rem;
   cursor: pointer;
+  color: #fff;
+  transition: all 0.2s ease;
 }
 
+.buttons i:hover {
+  transform: scale(1.1);
+}
+
+/* ---------- GIORNI DELLA SETTIMANA ---------- */
 .weekdays {
   width: 100%;
   display: flex;
@@ -13,67 +20,107 @@
 
 .weekdays span {
   width: calc(100% / 7);
-  font-size: clamp(1rem, 0.8cqi, 1.3rem);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 0.1 rem;
+  letter-spacing: 0.1rem;
   display: flex;
   justify-content: center;
   color: #00a3ff;
 }
 
+/* ---------- STRUTTURA CALENDARIO ---------- */
 .days {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
 }
 
-.days span {
-  font-size: calc(1.2rem, 1cqi, 1.6rem);
-  width: calc(100% / 7);
-  aspect-ratio: 4 / 2; /* stessa grandezza della width */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-size: 2rem;
+.day-cell {
   position: relative;
+  height: 110px;
+  border: 1px solid #ddd;
+  padding: 5px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f9f9f9;
+  transition: background-color 0.2s ease;
 }
 
-.current-day {
+.day-cell:hover {
+  background-color: #f2f2f2;
+}
+
+/* Giorno corrente */
+.day-cell.current-day {
   background-color: #ef9011;
-  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  border: 2px solid #ef9011;
+  box-shadow: 0 0 8px rgba(239, 144, 17, 0.6);
 }
 
-/* ADD EVENT */
+.day-number {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #222;
+}
+
+/* ---------- EVENTI ---------- */
+.events-container {
+  margin-top: 4px;
+  overflow-y: auto;
+  max-height: 80px;
+  scrollbar-width: thin;
+  scrollbar-color: #ef9011 transparent;
+}
+
+.events-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.events-container::-webkit-scrollbar-thumb {
+  background-color: #ef9011;
+  border-radius: 4px;
+}
+
 .event-title {
   font-size: 0.7rem;
-  display: inline-block;
-  max-width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
+  display: block;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
 }
 
-/* ----------- RESPONSIVE SMARTPHONE ----------- */
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 500px) {
-  .days span {
-    font-size: 1.6rem;
+  .day-cell {
+    height: 90px;
+  }
+
+  .day-number {
+    font-size: 0.9rem;
+  }
+
+  .event-title {
+    font-size: 0.6rem;
+  }
+
+  .buttons i {
+    font-size: 2rem;
   }
 }
 
-/* ----------- RESPONSIVE SMARTPHONE MINI ----------- */
 @media (max-width: 375px) {
   .navigate-date .month,
   .navigate-date .year {
-    font-size: 1.4rem;
-  }
-  .buttons i {
-    font-size: 2rem;
+    font-size: 1.2rem;
   }
   .weekdays span {
     font-size: 0.7rem;
   }
-  .days span {
-    font-size: 1.2rem;
+  .day-cell {
+    height: 80px;
   }
 }
