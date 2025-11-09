@@ -36,11 +36,22 @@
   align-items: center;
   cursor: pointer;
   font-size: 2rem;
+  position: relative;
 }
 
 .current-day {
   background-color: #ef9011;
   border-radius: 50%;
+}
+
+/* ADD EVENT */
+.event-title {
+  font-size: 0.7rem;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* ----------- RESPONSIVE SMARTPHONE ----------- */
