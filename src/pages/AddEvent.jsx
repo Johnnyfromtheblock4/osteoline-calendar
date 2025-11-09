@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useEvents } from "../context/EventContext";
+import Popup from "../components/Popup";
 import "../styles/AddEvent.css";
 
 const AddEvent = () => {
@@ -8,20 +9,42 @@ const AddEvent = () => {
   const [title, setTitle] = useState("");
   const [allDay, setAllDay] = useState(false);
   const [room, setRoom] = useState("");
-  const [startHour, setStartHour] = useState("");
-  const [startMinute, setStartMinute] = useState("");
-  const [endHour, setEndHour] = useState("");
-  const [endMinute, setEndMinute] = useState("");
+  const [startHour, setStartHour] = useState("00");
+  const [startMinute, setStartMinute] = useState("00");
+  const [endHour, setEndHour] = useState("00");
+  const [endMinute, setEndMinute] = useState("00");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+
+  // Funzione per aggiornare automaticamente l'orario di fine
+  const updateEndTime = (newStartHour, newStartMinute) => {
+    let endH = parseInt(newStartHour, 10);
+    let endM = parseInt(newStartMinute, 10);
+
+    // Aggiungi 1 ora
+    endH += 1;
+    if (endH >= 24) endH = 0; // reset se va oltre le 23
+
+    // Mantieni i minuti uguali
+    setEndHour(endH.toString().padStart(2, "0"));
+    setEndMinute(endM.toString().padStart(2, "0"));
+  };
+
+  const handleStartHourChange = (value) => {
+    const formatted = value.padStart(2, "0");
+    setStartHour(formatted);
+    updateEndTime(formatted, startMinute);
+  };
+
+  const handleStartMinuteChange = (value) => {
+    const formatted = value.padStart(2, "0");
+    setStartMinute(formatted);
+    updateEndTime(startHour, formatted);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!title || !date) {
-      alert("Inserisci almeno titolo e data!");
-      return;
-    }
 
     const newEvent = {
       title,
@@ -42,16 +65,16 @@ const AddEvent = () => {
     };
 
     addEvent(newEvent);
-    alert("Evento aggiunto!");
+    setShowPopup(true);
 
     // Reset campi
     setTitle("");
     setAllDay(false);
     setRoom("");
-    setStartHour("");
-    setStartMinute("");
-    setEndHour("");
-    setEndMinute("");
+    setStartHour("00");
+    setStartMinute("00");
+    setEndHour("00");
+    setEndMinute("00");
     setDescription("");
     setDate("");
   };
@@ -73,6 +96,7 @@ const AddEvent = () => {
                 placeholder="Inserisci titolo evento"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                required
               />
             </div>
 
@@ -86,12 +110,15 @@ const AddEvent = () => {
                 className="form-control custom-input"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                required
               />
             </div>
 
             {/* SWITCH "Tutto il giorno" */}
             <div className="col-12 mb-3 d-flex align-items-center justify-content-between">
-              <label className="form-check-label fw-bold">Tutto il giorno</label>
+              <label className="form-check-label fw-bold">
+                Tutto il giorno
+              </label>
               <div className="form-check form-switch">
                 <input
                   className="form-check-input custom-switch"
@@ -111,6 +138,7 @@ const AddEvent = () => {
                 className="form-select"
                 value={room}
                 onChange={(e) => setRoom(e.target.value)}
+                required
               >
                 <option value="">Seleziona la stanza</option>
                 <option value="Stanza Fede">Stanza Fede</option>
@@ -136,7 +164,10 @@ const AddEvent = () => {
                           max={23}
                           className="hours"
                           value={startHour}
-                          onChange={(e) => setStartHour(e.target.value)}
+                          onChange={(e) =>
+                            handleStartHourChange(e.target.value)
+                          }
+                          required
                         />
                         <input
                           type="number"
@@ -144,7 +175,10 @@ const AddEvent = () => {
                           max={59}
                           className="minutes"
                           value={startMinute}
-                          onChange={(e) => setStartMinute(e.target.value)}
+                          onChange={(e) =>
+                            handleStartMinuteChange(e.target.value)
+                          }
+                          required
                         />
                       </div>
                     </div>
@@ -159,7 +193,10 @@ const AddEvent = () => {
                           max={23}
                           className="hours"
                           value={endHour}
-                          onChange={(e) => setEndHour(e.target.value)}
+                          onChange={(e) =>
+                            setEndHour(e.target.value.padStart(2, "0"))
+                          }
+                          required
                         />
                         <input
                           type="number"
@@ -167,7 +204,10 @@ const AddEvent = () => {
                           max={59}
                           className="minutes"
                           value={endMinute}
-                          onChange={(e) => setEndMinute(e.target.value)}
+                          onChange={(e) =>
+                            setEndMinute(e.target.value.padStart(2, "0"))
+                          }
+                          required
                         />
                       </div>
                     </div>
@@ -176,16 +216,17 @@ const AddEvent = () => {
               </div>
             )}
 
-            {/* DESCRIZIONE */}
+            {/* DESCRIZIONE (facoltativa) */}
             <div className="col-12 mb-4">
-              <label className="form-label text-uppercase fw-bold text-warning">
-                Descrizione
+              <label className="form-label fw-bold text-warning">
+                DESCRIZIONE (Facoltativa)
               </label>
               <textarea
                 className="form-control custom-textarea"
                 placeholder="Inserisci descrizione (Max 60 caratteri)"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                maxLength={60}
               ></textarea>
             </div>
 
@@ -195,6 +236,15 @@ const AddEvent = () => {
                 Aggiungi Evento
               </button>
             </div>
+
+            {/* Popup di conferma riutilizzabile */}
+            <Popup
+              show={showPopup}
+              title="Evento creato!"
+              message="Il tuo evento è stato aggiunto correttamente al calendario."
+              onClose={() => setShowPopup(false)}
+              color="#ef9011"
+            />
           </form>
         </div>
       </div>

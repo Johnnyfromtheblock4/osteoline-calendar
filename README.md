@@ -13,3 +13,11 @@ FUNZIONI DA IMPLEMENTARE:
 - Etichetta utente (quando prendo appuntamento)
 - Cancellazione calendario con esportazione dati
 - Stili
+
+CALENDAR APP
+- Giorno selezionato cerchiato
+- Cliccando sul giorno mi mostra eventi 
+
+ADD EVENT
+- Più eventi nello stesso giorno
+- Se evento esiste gia per quella stanza pop up "stanza occupata per questo orario"
