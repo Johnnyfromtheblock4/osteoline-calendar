@@ -40,6 +40,19 @@ const AddEvent = () => {
             </div>
           </div>
 
+          {/* STANZA A SCELTA */}
+          <div className="col-12 mb-3">
+            <label className="form-label text-uppercase fw-bold text-warning">
+              Stanza
+            </label>
+            <select class="form-select" aria-label="Default select example">
+              <option selected>Seleziona la stanza</option>
+              <option value="1">Stanza Fede</option>
+              <option value="2">Stanza Trattamenti</option>
+              <option value="3">Palestra</option>
+            </select>
+          </div>
+
           {/* ORARI */}
           <div className="col-12 mb-3">
             <label className="form-label text-uppercase fw-bold text-warning">
