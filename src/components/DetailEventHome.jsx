@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useEvents } from "../context/EventContext";
 import AddEvent from "../pages/AddEvent";
+import EventDetailPopup from "../components/EventDetailPopup"; 
 import "../styles/DetailEventHome.css";
 
 const DetailEventHome = ({ selectedDate, onClose }) => {
-  const { events } = useEvents();
+  const { events, removeEvent, updateEvent } = useEvents(); 
   const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null); 
 
   // Conversione data
   const dateObj = new Date(selectedDate);
@@ -17,6 +19,17 @@ const DetailEventHome = ({ selectedDate, onClose }) => {
   const dayEvents = events
     .filter((ev) => ev.date === selectedDate)
     .sort((a, b) => (a.startTime > b.startTime ? 1 : -1));
+
+  // Funzioni di gestione evento
+  const handleDeleteEvent = (eventToDelete) => {
+    removeEvent(eventToDelete); // elimina dal context
+    setSelectedEvent(null);
+  };
+
+  const handleUpdateEvent = (updatedEvent) => {
+    updateEvent(updatedEvent); // aggiorna dal context
+    setSelectedEvent(null);
+  };
 
   return (
     <div className="detail-event-overlay">
@@ -63,10 +76,12 @@ const DetailEventHome = ({ selectedDate, onClose }) => {
                   <div
                     key={index}
                     className="event-card p-3 mb-3 text-white"
+                    onClick={() => setSelectedEvent(ev)} // apre popup
                     style={{
                       backgroundColor: ev.color,
                       borderRadius: "10px",
                       boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      cursor: "pointer",
                     }}
                   >
                     <div className="d-flex align-items-center">
@@ -104,6 +119,16 @@ const DetailEventHome = ({ selectedDate, onClose }) => {
           </>
         )}
       </div>
+
+      {/* Popup dettagli evento */}
+      {selectedEvent && (
+        <EventDetailPopup
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onDelete={handleDeleteEvent}
+          onUpdate={handleUpdateEvent}
+        />
+      )}
     </div>
   );
 };
