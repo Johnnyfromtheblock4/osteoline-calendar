@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useDate } from "../context/DateContext";
 import "../styles/Header.css";
 
 const Header = () => {
+  const { currentDate, setCurrentDate } = useDate();
+
   const months = [
     "Gennaio",
     "Febbraio",
@@ -17,15 +19,20 @@ const Header = () => {
     "Dicembre",
   ];
 
-  const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
-  const [selectedYear, setSelectedYear] = useState(currentYear);
-
-  // Genera anni
   const years = Array.from({ length: 11 }, (_, i) => 2025 + i);
+
+  const handleMonthChange = (e) => {
+    const newMonth = Number(e.target.value);
+    setCurrentDate(new Date(currentYear, newMonth, 1));
+  };
+
+  const handleYearChange = (e) => {
+    const newYear = Number(e.target.value);
+    setCurrentDate(new Date(newYear, currentMonth, 1));
+  };
 
   return (
     <>
@@ -52,8 +59,8 @@ const Header = () => {
               {/* Dropdown mese */}
               <select
                 className="form-select form-select-sm custom-select"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                value={currentMonth}
+                onChange={handleMonthChange}
               >
                 {months.map((month, index) => (
                   <option key={index} value={index}>
@@ -65,8 +72,8 @@ const Header = () => {
               {/* Dropdown anno */}
               <select
                 className="form-select form-select-sm custom-select"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                value={currentYear}
+                onChange={handleYearChange}
               >
                 {years.map((year) => (
                   <option key={year} value={year}>

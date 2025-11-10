@@ -17,9 +17,3 @@ FUNZIONI DA IMPLEMENTARE:
 HEADER 
 - Mese e anno
 
-CALENDAR APP
-- Giorno selezionato cerchiato
-- Cliccando sul giorno mi mostra eventi 
-
-ADD EVENT
-- quando clicco sull evento da aggiungere se sono gia in un giorno deve mettere di default la data giusta

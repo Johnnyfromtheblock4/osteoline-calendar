@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { useEvents } from "../context/EventContext";
+import { useDate } from "../context/DateContext";
 import "../styles/CalendarApp.css";
 import Header from "./Header";
 import DetailEventHome from "./DetailEventHome";
 
 const CalendarApp = () => {
   const { events } = useEvents();
+  const { currentDate, setCurrentDate } = useDate(); 
+  const [daysInMonth, setDaysInMonth] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const daysOfWeek = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
   const monthsOfYear = [
@@ -23,10 +27,7 @@ const CalendarApp = () => {
     "Dicembre",
   ];
 
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [daysInMonth, setDaysInMonth] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
-
+  // genera i giorni del mese corrente
   useEffect(() => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -34,24 +35,24 @@ const CalendarApp = () => {
     const firstDay = new Date(year, month, 1).getDay();
     const offset = firstDay === 0 ? 6 : firstDay - 1;
     const daysArray = Array(offset).fill(null);
-
     for (let i = 1; i <= totalDays; i++) daysArray.push(i);
     setDaysInMonth(daysArray);
   }, [currentDate]);
 
   const today = new Date();
 
+  // Navigazione mesi
   const prevMonth = () =>
     setCurrentDate(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
     );
 
   const nextMonth = () =>
     setCurrentDate(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
     );
 
-  // Ordina e filtra gli eventi per giorno
+  // Eventi per giorno
   const getEventsForDay = (day) => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -120,16 +121,15 @@ const CalendarApp = () => {
                       key={index}
                       className={`day-cell ${isToday ? "current-day" : ""}`}
                       onClick={() => {
-                        const dateStr = `${year}-${String(month + 1).padStart(
-                          2,
-                          "0"
-                        )}-${String(day).padStart(2, "0")}`;
+                        const dateStr = `${year}-${String(
+                          month + 1
+                        ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                         setSelectedDate(dateStr);
                       }}
+                      style={{ cursor: "pointer" }}
                     >
                       <div className="day-number">{day}</div>
 
-                      {/* Eventi multipli con scroll */}
                       <div className="events-container">
                         {dayEvents.map((ev, i) => (
                           <div
@@ -163,7 +163,7 @@ const CalendarApp = () => {
         </div>
       </div>
 
-      {/* Popup Dettagli Giorno */}
+      {/* Popup dettagli giorno */}
       {selectedDate && (
         <DetailEventHome
           selectedDate={selectedDate}
