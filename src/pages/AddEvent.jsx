@@ -3,7 +3,7 @@ import { useEvents } from "../context/EventContext";
 import Popup from "../components/Popup";
 import "../styles/AddEvent.css";
 
-const AddEvent = () => {
+const AddEvent = ({ defaultDate = "" }) => {
   const { events, addEvent } = useEvents();
 
   const [title, setTitle] = useState("");
@@ -14,7 +14,7 @@ const AddEvent = () => {
   const [endHour, setEndHour] = useState("01");
   const [endMinute, setEndMinute] = useState("00");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(defaultDate);
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupData, setPopupData] = useState({

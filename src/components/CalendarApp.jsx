@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useEvents } from "../context/EventContext";
 import "../styles/CalendarApp.css";
 import Header from "./Header";
+import DetailEventHome from "./DetailEventHome";
 
 const CalendarApp = () => {
   const { events } = useEvents();
@@ -24,6 +25,7 @@ const CalendarApp = () => {
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [daysInMonth, setDaysInMonth] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   useEffect(() => {
     const year = currentDate.getFullYear();
@@ -65,6 +67,7 @@ const CalendarApp = () => {
   return (
     <>
       <Header />
+
       <div className="calendar-app container-fluid my-5">
         <div className="container calendar">
           <div className="row mt-4 align-items-center">
@@ -74,6 +77,7 @@ const CalendarApp = () => {
               </h2>
               <h2 className="year">{currentDate.getFullYear()}</h2>
             </div>
+
             <div className="buttons col-6 text-end">
               <i
                 className="bx bx-chevron-left me-3"
@@ -108,11 +112,20 @@ const CalendarApp = () => {
                     currentDate.getFullYear() === today.getFullYear();
 
                   const dayEvents = getEventsForDay(day);
+                  const year = currentDate.getFullYear();
+                  const month = currentDate.getMonth();
 
                   return (
                     <span
                       key={index}
                       className={`day-cell ${isToday ? "current-day" : ""}`}
+                      onClick={() => {
+                        const dateStr = `${year}-${String(month + 1).padStart(
+                          2,
+                          "0"
+                        )}-${String(day).padStart(2, "0")}`;
+                        setSelectedDate(dateStr);
+                      }}
                     >
                       <div className="day-number">{day}</div>
 
@@ -149,6 +162,14 @@ const CalendarApp = () => {
           </div>
         </div>
       </div>
+
+      {/* Popup Dettagli Giorno */}
+      {selectedDate && (
+        <DetailEventHome
+          selectedDate={selectedDate}
+          onClose={() => setSelectedDate(null)}
+        />
+      )}
     </>
   );
 };

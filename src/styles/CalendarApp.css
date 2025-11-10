@@ -45,6 +45,8 @@
   overflow: hidden;
   background-color: #f9f9f9;
   transition: background-color 0.2s ease;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
 .day-cell:hover {
