@@ -51,10 +51,7 @@ const App = () => {
                 path="/login"
                 element={!user ? <LoginPage /> : <Navigate to="/" />}
               />
-              <Route
-                path="/register"
-                element={!user ? <RegisterPage /> : <Navigate to="/" />}
-              />
+              <Route path="/register" element={<RegisterPage />} />
             </Routes>
 
             {user && <Footer />}
