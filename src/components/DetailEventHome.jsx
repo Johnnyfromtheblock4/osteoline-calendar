@@ -68,7 +68,7 @@ const DetailEventHome = ({ selectedDate, onClose }) => {
             {/* Elenco Eventi */}
             <div className="events-list mt-4 px-3 mb-5">
               {dayEvents.length === 0 ? (
-                <p className="text-center text-muted">
+                <p className="text-center">
                   Nessun evento per questo giorno.
                 </p>
               ) : (

@@ -68,3 +68,10 @@
   color: white;
 }
 
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 500px) {
+  .date-info h2 {
+    font-size: 1rem;
+  }
+}

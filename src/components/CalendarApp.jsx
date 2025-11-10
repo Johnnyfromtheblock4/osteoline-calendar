@@ -7,7 +7,7 @@ import DetailEventHome from "./DetailEventHome";
 
 const CalendarApp = () => {
   const { events } = useEvents();
-  const { currentDate, setCurrentDate } = useDate(); 
+  const { currentDate, setCurrentDate } = useDate();
   const [daysInMonth, setDaysInMonth] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -95,7 +95,7 @@ const CalendarApp = () => {
             </div>
 
             {/* Giorni della settimana */}
-            <div className="col-12 mt-5">
+            <div className="col-12 my-5">
               <div className="weekdays">
                 {daysOfWeek.map((day) => (
                   <span key={day}>{day}</span>
@@ -121,9 +121,10 @@ const CalendarApp = () => {
                       key={index}
                       className={`day-cell ${isToday ? "current-day" : ""}`}
                       onClick={() => {
-                        const dateStr = `${year}-${String(
-                          month + 1
-                        ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                        const dateStr = `${year}-${String(month + 1).padStart(
+                          2,
+                          "0"
+                        )}-${String(day).padStart(2, "0")}`;
                         setSelectedDate(dateStr);
                       }}
                       style={{ cursor: "pointer" }}
@@ -141,16 +142,9 @@ const CalendarApp = () => {
                               fontSize: "0.7rem",
                               fontWeight: "600",
                             }}
-                            title={`${ev.startTime} - ${ev.title}`}
+                            title={ev.title} 
                           >
-                            {!ev.allDay ? (
-                              <>
-                                {ev.startTime} - {ev.endTime} -{" "}
-                                <strong>{ev.title}</strong>
-                              </>
-                            ) : (
-                              <strong>{ev.title} (Tutto il giorno)</strong>
-                            )}
+                            <strong>{ev.title}</strong>
                           </div>
                         ))}
                       </div>
