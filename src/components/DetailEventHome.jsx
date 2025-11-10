@@ -30,13 +30,13 @@ const DetailEventHome = ({ selectedDate, onClose }) => {
           </div>
           <div className="actions d-flex align-items-center gap-3">
             <button
-              className="btn btn-warning"
+              className="btn btn-warning btn-add"
               onClick={() => setShowAddForm(true)}
               title="Aggiungi evento"
             >
               <i className="fa-solid fa-plus"></i>
             </button>
-            <button className="btn btn-danger" onClick={onClose}>
+            <button className="btn btn-danger btn-back" onClick={onClose}>
               Chiudi
             </button>
           </div>

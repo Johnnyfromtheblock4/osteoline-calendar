@@ -38,11 +38,10 @@
 }
 
 .actions .btn-danger:hover {
-  background-color: #b02a37 !important; 
+  background-color: #b02a37 !important;
   border-color: #b02a37 !important;
   color: white !important;
 }
-
 
 /* Separator verticale */
 .separator-vertical {
@@ -68,3 +67,4 @@
   background: #dc3545;
   color: white;
 }
+

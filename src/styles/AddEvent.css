@@ -113,7 +113,31 @@
     width: 3.5rem;
   }
 
-  .event-popup-btn {
-    width: 100%;
+  .event-popup-btn,
+  .btn-cancel {
+    font-size: 1rem !important;
+    padding: 0.6rem 1.2rem !important;
+  }
+
+  .add-event-title {
+    font-size: 1.8rem; 
+  }
+
+  .form-label {
+    font-size: 0.9rem; 
+  }
+
+  .custom-input,
+  .custom-textarea {
+    font-size: 1.1rem; 
+    padding: 0.6rem;
+  }
+
+  .time-input {
+    font-size: 1.1rem;
+  }
+
+  .custom-textarea {
+    min-height: 80px;
   }
 }
