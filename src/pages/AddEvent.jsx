@@ -267,7 +267,7 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
               {onCancel && (
                 <button
                   type="button"
-                  className="btn btn-danger px-4"
+                  className="btn btn-danger px-4 btn-cancel"
                   onClick={onCancel}
                 >
                   Torna Indietro

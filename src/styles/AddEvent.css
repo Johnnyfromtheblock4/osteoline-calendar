@@ -89,6 +89,11 @@
   cursor: pointer;
 }
 
+.btn-cancel {
+  font-size: 1.4rem;
+  padding: 0.8rem 2rem;
+}
+
 /* Responsività */
 @media (max-width: 768px) {
   .add-event-box {
