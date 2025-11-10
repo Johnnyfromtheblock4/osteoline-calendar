@@ -22,4 +22,3 @@ CALENDAR APP
 - Cliccando sul giorno mi mostra eventi 
 
 ADD EVENT
-- Se evento esiste gia per quella stanza pop up "stanza occupata per questo orario"

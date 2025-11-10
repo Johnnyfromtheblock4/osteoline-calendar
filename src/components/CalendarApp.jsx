@@ -130,10 +130,14 @@ const CalendarApp = () => {
                             }}
                             title={`${ev.startTime} - ${ev.title}`}
                           >
-                            {ev.startTime !== "00:00" &&
-                              ev.startTime !== "" &&
-                              `${ev.startTime} - `}
-                            {ev.title}
+                            {!ev.allDay ? (
+                              <>
+                                {ev.startTime} - {ev.endTime} -{" "}
+                                <strong>{ev.title}</strong>
+                              </>
+                            ) : (
+                              <strong>{ev.title} (Tutto il giorno)</strong>
+                            )}
                           </div>
                         ))}
                       </div>
