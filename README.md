@@ -8,6 +8,6 @@ FUNZIONI RICHIESTE:
 
 FUNZIONI DA IMPLEMENTARE:
 - Etichetta utente (quando prendo appuntamento)
-- Cancellazione calendario con esportazione dati
+- Responsive
 
 

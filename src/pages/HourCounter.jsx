@@ -4,12 +4,15 @@ import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { useEvents } from "../context/EventContext";
 import { useState } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable"; // ✅ Import corretto
 
 const HourCounter = () => {
   const navigate = useNavigate();
   const { events } = useEvents();
   const [showAppointments, setShowAppointments] = useState(false);
 
+  // 🔹 LOGOUT
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -19,7 +22,7 @@ const HourCounter = () => {
     }
   };
 
-  // Data e mese corrente
+  // 📆 Data e mese corrente
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
@@ -33,37 +36,113 @@ const HourCounter = () => {
     );
   });
 
-  // Calcola ore totali per stanza
+  // 🔹 Calcola ore totali per stanza
   const roomHours = currentMonthEvents.reduce((acc, ev) => {
     const start = new Date(`${ev.date}T${ev.startTime}:00`);
     const end = new Date(`${ev.date}T${ev.endTime}:00`);
     let diffHours = (end - start) / (1000 * 60 * 60);
-    if (diffHours < 0) diffHours += 24;
+    if (diffHours < 0) diffHours += 24; // gestisce eventi che superano la mezzanotte
     acc[ev.room] = (acc[ev.room] || 0) + diffHours;
     return acc;
   }, {});
 
-  // Calcola totale generale
+  // 🔹 Calcola totale generale
   const totalHours = Object.values(roomHours).reduce((sum, h) => sum + h, 0);
 
-  // Raggruppa appuntamenti per stanza
+  // 🔹 Raggruppa appuntamenti per stanza
   const groupedEvents = currentMonthEvents.reduce((acc, ev) => {
     if (!acc[ev.room]) acc[ev.room] = [];
     acc[ev.room].push(ev);
     return acc;
   }, {});
 
-  // Funzione per formattare le ore senza .0
+  // 🔹 Formatta ore senza ".0"
   const formatHours = (num) => {
     return Number.isInteger(num) ? num : num.toFixed(2).replace(/\.00$/, "");
   };
 
+  // 📄 Funzione per esportare PDF
+  const handleExportPDF = () => {
+    if (Object.keys(roomHours).length === 0) return; // nessun evento
+    console.log("Generazione PDF avviata");
+
+    const doc = new jsPDF();
+    const monthName = now
+      .toLocaleString("it-IT", { month: "long" })
+      .toUpperCase();
+
+    // Titolo
+    doc.setFontSize(18);
+    doc.text(`Riepilogo Ore - ${monthName} ${currentYear}`, 14, 20);
+
+    // Ore per stanza
+    doc.setFontSize(14);
+    doc.text("Ore per Stanza:", 14, 35);
+
+    const roomTable = Object.entries(roomHours).map(([room, hours]) => [
+      room,
+      `${formatHours(hours)} ore`,
+    ]);
+    roomTable.push(["Totale", `${formatHours(totalHours)} ore`]);
+
+    autoTable(doc, {
+      startY: 40,
+      head: [["Stanza", "Ore Totali"]],
+      body: roomTable,
+      styles: { fontSize: 11 },
+      headStyles: { fillColor: [239, 144, 17] },
+    });
+
+    // Lista appuntamenti
+    let y = doc.lastAutoTable.finalY + 10;
+    doc.setFontSize(14);
+    doc.text("Lista Appuntamenti", 14, y);
+    y += 5;
+
+    Object.entries(groupedEvents).forEach(([room, roomEvents]) => {
+      // Colori stanza
+      doc.setFontSize(12);
+      doc.setTextColor(
+        room === "Stanza Fede" ? 243 : room === "Stanza Trattamenti" ? 52 : 39,
+        room === "Stanza Fede"
+          ? 156
+          : room === "Stanza Trattamenti"
+          ? 152
+          : 174,
+        room === "Stanza Fede" ? 18 : room === "Stanza Trattamenti" ? 219 : 96
+      );
+
+      // Nome stanza
+      doc.text(room, 14, y + 8);
+
+      autoTable(doc, {
+        startY: y + 10,
+        head: [["Data", "Titolo", "Orario"]],
+        body: roomEvents.map((ev) => [
+          ev.date,
+          ev.title,
+          `${ev.startTime} - ${ev.endTime}`,
+        ]),
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [239, 144, 17] },
+        margin: { left: 14 },
+      });
+
+      y = doc.lastAutoTable.finalY + 10;
+    });
+
+    // 🔹 Salva PDF
+    doc.save(`Riepilogo_Ore_${monthName}_${currentYear}.pdf`);
+  };
+
+  // 🔹 Rendering
   return (
     <>
       <h1 className="hour-counter-title my-4 text-center">Profilo</h1>
 
       <div className="hour-counter-container container d-flex justify-content-center align-items-center mt-4">
         <div className="hour-counter-box row text-center">
+          {/* --- CONTEGGIO ORE --- */}
           <div className="col-12">
             <h2 className="hour-counter-subtitle text-warning">
               Conteggio ore mese corrente
@@ -97,7 +176,7 @@ const HourCounter = () => {
               </p>
             )}
 
-            {/* Bottone toggle lista */}
+            {/* --- BOTTONE MOSTRA/NASCONDI LISTA --- */}
             {currentMonthEvents.length > 0 && (
               <div className="mt-4">
                 <button
@@ -109,7 +188,7 @@ const HourCounter = () => {
               </div>
             )}
 
-            {/* Lista Appuntamenti */}
+            {/* --- LISTA APPUNTAMENTI --- */}
             {showAppointments && (
               <div className="appointments-list mt-4 text-start">
                 {Object.entries(groupedEvents).map(([room, roomEvents]) => (
@@ -161,6 +240,20 @@ const HourCounter = () => {
               </div>
             )}
 
+            {/* --- BOTTONE ESPORTA PDF --- */}
+            {currentMonthEvents.length > 0 && (
+              <div className="col-12 mt-4">
+                <button
+                  className="btn btn-outline-light fw-bold"
+                  onClick={handleExportPDF}
+                >
+                  <i className="fa-solid fa-file-pdf me-2 text-danger"></i>
+                  Esporta in PDF
+                </button>
+              </div>
+            )}
+
+            {/* --- SEZIONE NOTE --- */}
             <h2 className="hour-counter-subtitle text-warning mt-4">Note</h2>
             <p>
               Qui andrà una textarea con relativo pulsante “Aggiungi” che crea
@@ -169,6 +262,7 @@ const HourCounter = () => {
             </p>
           </div>
 
+          {/* --- LOGOUT --- */}
           <div className="col-12 mb-4">
             <button
               className="btn btn-danger logout-btn"

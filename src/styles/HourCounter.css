@@ -68,3 +68,53 @@
   background-color: #ef9011;
   border-radius: 6px;
 }
+
+/* --- RESPONSIVE DESIGN (mobile sotto i 500px) --- */
+@media (max-width: 500px) {
+  .hour-counter-title {
+    font-size: 1.8rem;
+    letter-spacing: 0.05rem;
+  }
+
+  .hour-counter-box {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  .hour-counter-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .hour-counter-box p,
+  .appointments-list p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .appointments-list {
+    padding: 1rem;
+    max-height: 300px;
+  }
+
+  .appointment-card {
+    padding: 0.8rem 1rem;
+  }
+
+  .logout-btn {
+    font-size: 1rem;
+    padding: 0.5rem 1.2rem;
+  }
+
+  .btn {
+    font-size: 0.9rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  h5 {
+    font-size: 1rem;
+  }
+
+  .fw-bold.fs-5 {
+    font-size: 1rem !important;
+  }
+}
