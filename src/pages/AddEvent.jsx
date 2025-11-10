@@ -57,6 +57,25 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Calcola data e ora dell'evento
+    const eventDateTime = new Date(`${date}T${startHour}:${startMinute}:00`);
+    const now = new Date();
+    const hoursDiff = (eventDateTime - now) / (1000 * 60 * 60); // differenza in ore
+
+    // Blocco se meno di 24 ore o già passato
+    if (hoursDiff < 24) {
+      setPopupData({
+        title: "Attenzione!",
+        message:
+          hoursDiff < 0
+            ? "Non puoi aggiungere un evento in una data o orario già passato."
+            : "Non puoi aggiungere un evento che inizia tra meno di 24 ore.",
+        color: "#dc3545",
+      });
+      setShowPopup(true);
+      return;
+    }
+
     const newEvent = {
       title,
       date,

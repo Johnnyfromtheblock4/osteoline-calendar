@@ -4,20 +4,26 @@ import "../styles/EventDetailPopup.css";
 const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [showRestrictionPopup, setShowRestrictionPopup] = useState(false);
+  const [restrictionMessage, setRestrictionMessage] = useState("");
   const [editedEvent, setEditedEvent] = useState({ ...event });
 
-  // Genera le opzioni per ore e minuti
   const hours = Array.from({ length: 24 }, (_, i) =>
     String(i).padStart(2, "0")
   );
   const minutes = ["00", "15", "30", "45"];
 
-  // Aggiorna orario fine (+1h automatico)
+  // Calcola differenza ore tra ora e evento
+  const getHoursDiff = (date, time) => {
+    const eventDateTime = new Date(`${date}T${time}:00`);
+    const now = new Date();
+    return (eventDateTime - now) / (1000 * 60 * 60);
+  };
+
   const handleStartChange = (hour, minute) => {
     const newStart = `${hour}:${minute}`;
     let endHour = (parseInt(hour) + 1) % 24;
     const newEnd = `${String(endHour).padStart(2, "0")}:${minute}`;
-
     setEditedEvent({
       ...editedEvent,
       startTime: newStart,
@@ -25,10 +31,19 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
     });
   };
 
-  // Salva modifiche → aggiorna e torna alla schermata principale
+  // Salvataggio modifiche con blocco 24h
   const handleSave = () => {
-    if (!editedEvent.title.trim())
-      return alert("Il titolo non può essere vuoto.");
+    const hoursDiff = getHoursDiff(editedEvent.date, editedEvent.startTime);
+
+    if (hoursDiff < 24) {
+      setRestrictionMessage(
+        hoursDiff < 0
+          ? "❌ Non puoi modificare un evento già passato."
+          : "⚠️ Non puoi modificare un evento che inizia tra meno di 24 ore."
+      );
+      setShowRestrictionPopup(true);
+      return;
+    }
 
     let newColor = editedEvent.color;
     if (editedEvent.room === "Stanza Fede") newColor = "#f39c12";
@@ -36,9 +51,28 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
     else if (editedEvent.room === "Palestra") newColor = "#27ae60";
 
     const updated = { ...editedEvent, color: newColor };
-    onUpdate(updated); // aggiorna nel context
+    onUpdate(updated);
     setIsEditing(false);
-    onClose(); // chiude il popup esattamente come "Torna indietro"
+    onClose();
+  };
+
+  // Eliminazione con blocco 24h
+  const handleDelete = () => {
+    const hoursDiff = getHoursDiff(event.date, event.startTime);
+
+    if (hoursDiff < 24) {
+      setShowConfirmDelete(false);
+      setRestrictionMessage(
+        hoursDiff < 0
+          ? "❌ Non puoi eliminare un evento già passato."
+          : "⚠️ Non puoi eliminare un evento che inizia tra meno di 24 ore."
+      );
+      setShowRestrictionPopup(true);
+      return;
+    }
+
+    onDelete(event);
+    onClose();
   };
 
   return (
@@ -83,7 +117,6 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
         <div className="popup-body text-center mt-4">
           {isEditing ? (
             <>
-              {/* Titolo */}
               <input
                 type="text"
                 className="form-control mb-3"
@@ -93,7 +126,6 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
                 }
               />
 
-              {/* Orari */}
               <div className="row g-2 mb-3">
                 <div className="col-6">
                   <label className="small text-warning">Inizio</label>
@@ -168,7 +200,6 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
                 </div>
               </div>
 
-              {/* Stanza */}
               <select
                 className="form-select mb-3"
                 value={editedEvent.room}
@@ -181,7 +212,6 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
                 <option value="Palestra">Palestra</option>
               </select>
 
-              {/* Descrizione */}
               <textarea
                 className="form-control mb-3"
                 value={editedEvent.description}
@@ -220,7 +250,7 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
           )}
         </div>
 
-        {/* Conferma eliminazione */}
+        {/* POPUP conferma eliminazione */}
         {showConfirmDelete && (
           <div className="confirm-delete-overlay">
             <div className="confirm-delete-box text-center">
@@ -228,10 +258,7 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
               <div className="d-flex justify-content-center gap-3 mt-3">
                 <button
                   className="btn btn-danger px-4 fw-bold"
-                  onClick={() => {
-                    onDelete(event);
-                    onClose();
-                  }}
+                  onClick={handleDelete}
                 >
                   Conferma
                 </button>
@@ -240,6 +267,23 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
                   onClick={() => setShowConfirmDelete(false)}
                 >
                   Annulla
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* POPUP RESTRIZIONE MODIFICA/ELIMINAZIONE */}
+        {showRestrictionPopup && (
+          <div className="confirm-delete-overlay">
+            <div className="confirm-delete-box text-center">
+              <h5 className="text-warning">{restrictionMessage}</h5>
+              <div className="d-flex justify-content-center mt-3">
+                <button
+                  className="btn btn-warning fw-bold px-4"
+                  onClick={() => setShowRestrictionPopup(false)}
+                >
+                  Chiudi
                 </button>
               </div>
             </div>

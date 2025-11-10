@@ -9,7 +9,6 @@ FUNZIONI RICHIESTE:
 FUNZIONI DA IMPLEMENTARE:
 - Implementare eliminazione non possibile se < 24h
 - Eliminazione eventi giornata non abilitata (modifica si)
-- Login e Registrazione (Firebase)
 - Calendario che faccia un conteggio orario ad ogni mese per utente
 - Etichetta utente (quando prendo appuntamento)
 - Cancellazione calendario con esportazione dati
