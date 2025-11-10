@@ -3,7 +3,7 @@ import { useEvents } from "../context/EventContext";
 import Popup from "../components/Popup";
 import "../styles/AddEvent.css";
 
-const AddEvent = ({ defaultDate = "" }) => {
+const AddEvent = ({ defaultDate = "", onCancel }) => {
   const { events, addEvent } = useEvents();
 
   const [title, setTitle] = useState("");
@@ -49,18 +49,8 @@ const AddEvent = ({ defaultDate = "" }) => {
   const hasConflict = (newEvent) => {
     return events.some((ev) => {
       if (ev.date !== newEvent.date || ev.room !== newEvent.room) return false;
-
-      // Tutto il giorno → conflitto diretto
       if (ev.allDay || newEvent.allDay) return true;
-
-      // Confronto orari
-      const startA = ev.startTime;
-      const endA = ev.endTime;
-      const startB = newEvent.startTime;
-      const endB = newEvent.endTime;
-
-      // Sovrapposizione oraria
-      return startA < endB && startB < endA;
+      return ev.startTime < newEvent.endTime && newEvent.startTime < ev.endTime;
     });
   };
 
@@ -85,18 +75,16 @@ const AddEvent = ({ defaultDate = "" }) => {
       description,
     };
 
-    // Controlla se c'è conflitto con altri eventi
     if (hasConflict(newEvent)) {
       setPopupData({
         title: "Attenzione!",
         message: "La stanza è già occupata per questo orario.",
-        color: "#dc3545", // rosso errore
+        color: "#dc3545",
       });
       setShowPopup(true);
       return;
     }
 
-    // Se nessun conflitto → aggiungi evento
     addEvent(newEvent);
 
     setPopupData({
@@ -112,10 +100,10 @@ const AddEvent = ({ defaultDate = "" }) => {
     setRoom("");
     setStartHour("00");
     setStartMinute("00");
-    setEndHour("00");
+    setEndHour("01");
     setEndMinute("00");
     setDescription("");
-    setDate("");
+    setDate(defaultDate);
   };
 
   return (
@@ -222,6 +210,7 @@ const AddEvent = ({ defaultDate = "" }) => {
                       </div>
                     </div>
                   </div>
+
                   <div className="col-6">
                     <div className="time-input text-end">
                       <span>Fine</span>
@@ -258,7 +247,7 @@ const AddEvent = ({ defaultDate = "" }) => {
             {/* DESCRIZIONE */}
             <div className="col-12 mb-4">
               <label className="form-label fw-bold text-warning">
-                DESCRIZIONE (Facoltativa)
+                Descrizione (facoltativa)
               </label>
               <textarea
                 className="form-control custom-textarea"
@@ -270,10 +259,20 @@ const AddEvent = ({ defaultDate = "" }) => {
             </div>
 
             {/* BOTTONI */}
-            <div className="col-12 d-flex justify-content-center align-items-center">
+            <div className="col-12 d-flex justify-content-center align-items-center gap-3 mt-3">
               <button className="event-popup-btn" type="submit">
                 Aggiungi Evento
               </button>
+
+              {onCancel && (
+                <button
+                  type="button"
+                  className="btn btn-danger px-4"
+                  onClick={onCancel}
+                >
+                  Torna Indietro
+                </button>
+              )}
             </div>
 
             {/* Popup riutilizzabile */}
@@ -281,7 +280,14 @@ const AddEvent = ({ defaultDate = "" }) => {
               show={showPopup}
               title={popupData.title}
               message={popupData.message}
-              onClose={() => setShowPopup(false)}
+              onClose={() => {
+                setShowPopup(false);
+
+                // Se il popup è di successo → chiudi anche il form
+                if (popupData.color === "#ef9011" && onCancel) {
+                  onCancel();
+                }
+              }}
               color={popupData.color}
             />
           </form>

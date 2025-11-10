@@ -42,72 +42,67 @@ const DetailEventHome = ({ selectedDate, onClose }) => {
           </div>
         </div>
 
-        {/* Form Aggiungi Evento */}
-        {showAddForm && (
-          <div className="add-event-overlay">
-            <div className="add-event-popup p-4">
-              {/* Pulsante chiudi */}
-              <button
-                className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
-                onClick={() => setShowAddForm(false)}
-                aria-label="Chiudi"
-              ></button>
-
-              {/* Form AddEvent con data di default */}
-              <AddEvent defaultDate={selectedDate} />
-            </div>
+        {/* Se è aperto il form, mostralo */}
+        {showAddForm ? (
+          <div className="add-event-section mt-4">
+            <AddEvent
+              defaultDate={selectedDate}
+              onCancel={() => setShowAddForm(false)}
+            />
           </div>
+        ) : (
+          <>
+            {/* Elenco Eventi */}
+            <div className="events-list mt-4 px-3 mb-5">
+              {dayEvents.length === 0 ? (
+                <p className="text-center text-muted">
+                  Nessun evento per questo giorno.
+                </p>
+              ) : (
+                dayEvents.map((ev, index) => (
+                  <div
+                    key={index}
+                    className="event-card p-3 mb-3 text-white"
+                    style={{
+                      backgroundColor: ev.color,
+                      borderRadius: "10px",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                    }}
+                  >
+                    <div className="d-flex align-items-center">
+                      {/* Orari */}
+                      <div className="event-time text-center me-3">
+                        <div className="fw-bold">{ev.startTime}</div>
+                        <div className="small">{ev.endTime}</div>
+                      </div>
+
+                      {/* Separatore verticale */}
+                      <div className="separator-vertical mx-3"></div>
+
+                      {/* Info evento */}
+                      <div className="event-info flex-grow-1">
+                        <h5 className="m-0">{ev.title}</h5>
+                        {ev.description && (
+                          <p className="small mt-1 mb-0">{ev.description}</p>
+                        )}
+                      </div>
+
+                      {/* Icona utente a destra */}
+                      <i className="fa-solid fa-user fa-lg ms-3"></i>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Bottone Chiudi in fondo */}
+            <div className="text-center mb-4">
+              <button className="btn btn-danger px-4" onClick={onClose}>
+                Chiudi
+              </button>
+            </div>
+          </>
         )}
-
-        {/* Elenco Eventi */}
-        <div className="events-list mt-4 px-3 mb-5">
-          {dayEvents.length === 0 ? (
-            <p className="text-center text-muted">
-              Nessun evento per questo giorno.
-            </p>
-          ) : (
-            dayEvents.map((ev, index) => (
-              <div
-                key={index}
-                className="event-card p-3 mb-3 text-white"
-                style={{
-                  backgroundColor: ev.color,
-                  borderRadius: "10px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                }}
-              >
-                <div className="d-flex align-items-center">
-                  {/* Orari */}
-                  <div className="event-time text-center me-3">
-                    <div className="fw-bold">{ev.startTime}</div>
-                    <div className="small">{ev.endTime}</div>
-                  </div>
-
-                  {/* Separatore verticale */}
-                  <div className="separator-vertical mx-3"></div>
-
-                  {/* Info evento */}
-                  <div className="event-info flex-grow-1">
-                    <h5 className="m-0">{ev.title}</h5>
-                    {ev.description && (
-                      <p className="small mt-1 mb-0">{ev.description}</p>
-                    )}
-                  </div>
-
-                  {/* Icona utente a destra */}
-                  <i className="fa-solid fa-user fa-lg ms-3"></i>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Bottone Chiudi in fondo */}
-        <div className="text-center mb-4">
-          <button className="btn btn-danger px-4" onClick={onClose}>
-            Chiudi
-          </button>
-        </div>
       </div>
     </div>
   );
