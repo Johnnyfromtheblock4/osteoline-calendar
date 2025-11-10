@@ -20,3 +20,20 @@
   font-size: 1rem;
   font-weight: bold;
 }
+
+.logout-btn {
+  background-color: #dc3545 !important;
+  border: 2px solid #dc3545 !important;
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 1.2rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #b02a37 !important;
+  border-color: #b02a37 !important;
+  color: white !important;
+}

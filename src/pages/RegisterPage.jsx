@@ -15,14 +15,15 @@ const RegisterPage = () => {
     e.preventDefault();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      setPopup(true);
-      setTimeout(() => {
-        setPopup(false);
-        navigate("/login");
-      }, 2000);
+      setPopup(true); // mostra popup
     } catch (err) {
       setError("Errore nella registrazione. Prova con un'altra email.");
     }
+  };
+
+  const handleClosePopup = () => {
+    setPopup(false);
+    navigate("/login"); // vai al login dopo la chiusura del popup
   };
 
   return (
@@ -55,9 +56,20 @@ const RegisterPage = () => {
         </p>
       </div>
 
+      {/* POPUP DI SUCCESSO */}
       {popup && (
-        <div className="popup-success">
-          Registrazione avvenuta con successo!
+        <div className="popup-overlay">
+          <div className="popup-box text-center">
+            <h4 className="text-success">
+              ✅ Registrazione avvenuta con successo!
+            </h4>
+            <p className="mt-2 mb-3">
+              Ora puoi effettuare il login con le tue credenziali.
+            </p>
+            <button className="btn btn-warning" onClick={handleClosePopup}>
+              Vai al Login
+            </button>
+          </div>
         </div>
       )}
     </div>

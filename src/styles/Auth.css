@@ -76,3 +76,49 @@
   font-weight: 600;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
+
+/* ===== POPUP DI SUCCESSO ===== */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 15, 15, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.popup-box {
+  background: #1e242d;
+  border: 2px solid #ef9011;
+  border-radius: 1rem;
+  color: white;
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 15px rgba(239, 144, 17, 0.3);
+}
+
+.popup-box h4 {
+  color: #ef9011;
+  font-weight: bold;
+}
+
+.popup-box .btn {
+  background-color: #ef9011;
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.popup-box .btn:hover {
+  background-color: #ffb84d;
+  color: #1e242d;
+}
