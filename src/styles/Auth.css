@@ -1,0 +1,78 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #0f1319;
+}
+
+.auth-box {
+  background: #1e242d;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  border: 1px solid #ef9011;
+  text-align: center;
+  color: white;
+  width: 90%;
+  max-width: 400px;
+}
+
+.auth-box h2 {
+  color: #ef9011;
+  margin-bottom: 1.5rem;
+}
+
+.auth-box input {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ef9011;
+  background-color: #0f1319;
+  color: white;
+}
+
+.auth-box button {
+  width: 100%;
+  background-color: #ef9011;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.auth-box button:hover {
+  background-color: #ffb84d;
+  color: #1e242d;
+}
+
+.error-text {
+  color: #dc3545;
+  margin-bottom: 1rem;
+}
+
+.switch-auth {
+  margin-top: 1rem;
+  color: #ccc;
+}
+
+.link-text {
+  color: #ef9011;
+  font-weight: 600;
+}
+
+.popup-success {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #27ae60;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}

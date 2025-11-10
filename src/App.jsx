@@ -1,23 +1,63 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
+
 import Homepage from "./pages/Homepage";
 import AddEvent from "./pages/AddEvent";
 import HourCounter from "./pages/HourCounter";
 import Footer from "./components/Footer";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import { EventProvider } from "./context/EventContext";
-import { DateProvider } from "./context/DateContext"; 
+import { DateProvider } from "./context/DateContext";
 
 const App = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) return null;
+
   return (
     <BrowserRouter>
       <EventProvider>
         <DateProvider>
           <div className="app-wrapper">
             <Routes>
-              <Route path="/" element={<Homepage />} />
-              <Route path="/AddEvent" element={<AddEvent />} />
-              <Route path="/HourCounter" element={<HourCounter />} />
+              {/* Accesso controllato */}
+              <Route
+                path="/"
+                element={user ? <Homepage /> : <Navigate to="/login" />}
+              />
+              <Route
+                path="/AddEvent"
+                element={user ? <AddEvent /> : <Navigate to="/login" />}
+              />
+              <Route
+                path="/HourCounter"
+                element={user ? <HourCounter /> : <Navigate to="/login" />}
+              />
+
+              {/* Autenticazione */}
+              <Route
+                path="/login"
+                element={!user ? <LoginPage /> : <Navigate to="/" />}
+              />
+              <Route
+                path="/register"
+                element={!user ? <RegisterPage /> : <Navigate to="/" />}
+              />
             </Routes>
-            <Footer />
+
+            {user && <Footer />}
           </div>
         </DateProvider>
       </EventProvider>
