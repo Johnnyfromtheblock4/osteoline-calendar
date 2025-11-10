@@ -14,10 +14,12 @@ FUNZIONI DA IMPLEMENTARE:
 - Cancellazione calendario con esportazione dati
 - Stili
 
+HEADER 
+- Mese e anno
+
 CALENDAR APP
 - Giorno selezionato cerchiato
 - Cliccando sul giorno mi mostra eventi 
 
 ADD EVENT
-- Più eventi nello stesso giorno
 - Se evento esiste gia per quella stanza pop up "stanza occupata per questo orario"

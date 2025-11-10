@@ -4,29 +4,31 @@ import Popup from "../components/Popup";
 import "../styles/AddEvent.css";
 
 const AddEvent = () => {
-  const { addEvent } = useEvents();
+  const { events, addEvent } = useEvents();
 
   const [title, setTitle] = useState("");
   const [allDay, setAllDay] = useState(false);
   const [room, setRoom] = useState("");
   const [startHour, setStartHour] = useState("00");
   const [startMinute, setStartMinute] = useState("00");
-  const [endHour, setEndHour] = useState("00");
+  const [endHour, setEndHour] = useState("01");
   const [endMinute, setEndMinute] = useState("00");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
 
-  // Funzione per aggiornare automaticamente l'orario di fine
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupData, setPopupData] = useState({
+    title: "",
+    message: "",
+    color: "#ef9011",
+  });
+
+  // Aggiorna automaticamente orario di fine
   const updateEndTime = (newStartHour, newStartMinute) => {
     let endH = parseInt(newStartHour, 10);
     let endM = parseInt(newStartMinute, 10);
-
-    // Aggiungi 1 ora
     endH += 1;
-    if (endH >= 24) endH = 0; // reset se va oltre le 23
-
-    // Mantieni i minuti uguali
+    if (endH >= 24) endH = 0;
     setEndHour(endH.toString().padStart(2, "0"));
     setEndMinute(endM.toString().padStart(2, "0"));
   };
@@ -41,6 +43,25 @@ const AddEvent = () => {
     const formatted = value.padStart(2, "0");
     setStartMinute(formatted);
     updateEndTime(startHour, formatted);
+  };
+
+  // Controllo conflitti
+  const hasConflict = (newEvent) => {
+    return events.some((ev) => {
+      if (ev.date !== newEvent.date || ev.room !== newEvent.room) return false;
+
+      // Tutto il giorno → conflitto diretto
+      if (ev.allDay || newEvent.allDay) return true;
+
+      // Confronto orari
+      const startA = ev.startTime;
+      const endA = ev.endTime;
+      const startB = newEvent.startTime;
+      const endB = newEvent.endTime;
+
+      // Sovrapposizione oraria
+      return startA < endB && startB < endA;
+    });
   };
 
   const handleSubmit = (e) => {
@@ -64,10 +85,28 @@ const AddEvent = () => {
       description,
     };
 
+    // Controlla se c'è conflitto con altri eventi
+    if (hasConflict(newEvent)) {
+      setPopupData({
+        title: "Attenzione!",
+        message: "La stanza è già occupata per questo orario.",
+        color: "#dc3545", // rosso errore
+      });
+      setShowPopup(true);
+      return;
+    }
+
+    // Se nessun conflitto → aggiungi evento
     addEvent(newEvent);
+
+    setPopupData({
+      title: "Evento creato!",
+      message: "Il tuo evento è stato aggiunto correttamente al calendario.",
+      color: "#ef9011",
+    });
     setShowPopup(true);
 
-    // Reset campi
+    // Reset form
     setTitle("");
     setAllDay(false);
     setRoom("");
@@ -216,7 +255,7 @@ const AddEvent = () => {
               </div>
             )}
 
-            {/* DESCRIZIONE (facoltativa) */}
+            {/* DESCRIZIONE */}
             <div className="col-12 mb-4">
               <label className="form-label fw-bold text-warning">
                 DESCRIZIONE (Facoltativa)
@@ -237,13 +276,13 @@ const AddEvent = () => {
               </button>
             </div>
 
-            {/* Popup di conferma riutilizzabile */}
+            {/* Popup riutilizzabile */}
             <Popup
               show={showPopup}
-              title="Evento creato!"
-              message="Il tuo evento è stato aggiunto correttamente al calendario."
+              title={popupData.title}
+              message={popupData.message}
               onClose={() => setShowPopup(false)}
-              color="#ef9011"
+              color={popupData.color}
             />
           </form>
         </div>
