@@ -13,7 +13,9 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
   const currentUser = auth.currentUser;
   const isOwner = currentUser && currentUser.uid === event.ownerId;
 
-  const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+  const hours = Array.from({ length: 24 }, (_, i) =>
+    String(i).padStart(2, "0")
+  );
   const minutes = ["00", "15", "30", "45"];
 
   // Calcola differenza ore tra ora e evento
@@ -178,7 +180,9 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
                       onChange={(e) =>
                         setEditedEvent({
                           ...editedEvent,
-                          endTime: `${e.target.value}:${editedEvent.endTime.split(":")[1]}`,
+                          endTime: `${e.target.value}:${
+                            editedEvent.endTime.split(":")[1]
+                          }`,
                         })
                       }
                     >
@@ -192,7 +196,9 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
                       onChange={(e) =>
                         setEditedEvent({
                           ...editedEvent,
-                          endTime: `${editedEvent.endTime.split(":")[0]}:${e.target.value}`,
+                          endTime: `${editedEvent.endTime.split(":")[0]}:${
+                            e.target.value
+                          }`,
                         })
                       }
                     >

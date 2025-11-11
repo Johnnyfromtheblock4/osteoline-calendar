@@ -17,7 +17,7 @@
   border-radius: 1rem;
   color: white;
   width: 95%;
-  max-width: 550px; 
+  max-width: 550px;
   padding: 2rem;
   position: relative;
   box-shadow: 0 0 15px rgba(239, 144, 17, 0.3);
@@ -94,6 +94,30 @@ textarea.form-control {
 
 textarea.form-control:focus {
   border-color: #ffb84d;
+}
+
+/* BTN BORDERS */
+/* Rimuove tutti i bordi e ombre dei bottoni dentro il popup */
+.event-detail-popup .btn {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Anche su hover, focus e active */
+.event-detail-popup .btn:hover,
+.event-detail-popup .btn:focus,
+.event-detail-popup .btn:active {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Migliora coerenza visiva: no bordo nemmeno nei popup interni */
+.confirm-delete-box .btn {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 @media (max-width: 500px) {

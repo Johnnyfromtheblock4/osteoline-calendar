@@ -23,7 +23,10 @@
   border-radius: 0.5rem;
   padding: 0.8rem;
   font-size: 1.4rem;
+  color: #ffffff; 
+  caret-color: #ef9011; 
 }
+
 
 .custom-input::placeholder,
 .custom-textarea::placeholder {
