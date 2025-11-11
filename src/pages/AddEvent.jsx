@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useEvents } from "../context/EventContext";
 import Popup from "../components/Popup";
 import "../styles/AddEvent.css";
+import { auth, db } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 const AddEvent = ({ defaultDate = "", onCancel }) => {
   const { events, addEvent } = useEvents();
@@ -15,6 +17,7 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
   const [endMinute, setEndMinute] = useState("00");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(defaultDate);
+  const [username, setUsername] = useState("Utente");
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupData, setPopupData] = useState({
@@ -22,6 +25,24 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
     message: "",
     color: "#ef9011",
   });
+
+  // Recupera username dell'utente loggato da Firestore
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setUsername(docSnap.data().username || "Utente");
+        }
+      } catch (error) {
+        console.error("Errore nel recupero dell'username:", error);
+      }
+    };
+    fetchUsername();
+  }, []);
 
   // Aggiorna automaticamente orario di fine
   const updateEndTime = (newStartHour, newStartMinute) => {
@@ -54,13 +75,24 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const user = auth.currentUser;
+    if (!user) {
+      setPopupData({
+        title: "Errore autenticazione",
+        message: "Devi essere loggato per creare un evento.",
+        color: "#dc3545",
+      });
+      setShowPopup(true);
+      return;
+    }
 
     // Calcola data e ora dell'evento
     const eventDateTime = new Date(`${date}T${startHour}:${startMinute}:00`);
     const now = new Date();
-    const hoursDiff = (eventDateTime - now) / (1000 * 60 * 60); // differenza in ore
+    const hoursDiff = (eventDateTime - now) / (1000 * 60 * 60);
 
     // Blocco se meno di 24 ore o già passato
     if (hoursDiff < 24) {
@@ -76,7 +108,9 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
       return;
     }
 
+    // Crea nuovo evento con riferimento all'utente loggato
     const newEvent = {
+      id: crypto.randomUUID(), // id univoco per ogni evento
       title,
       date,
       room,
@@ -92,6 +126,9 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
       startTime: `${startHour}:${startMinute}`,
       endTime: `${endHour}:${endMinute}`,
       description,
+      ownerId: user.uid,
+      createdByName: username,
+      createdAt: new Date().toISOString(),
     };
 
     if (hasConflict(newEvent)) {
@@ -301,11 +338,7 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
               message={popupData.message}
               onClose={() => {
                 setShowPopup(false);
-
-                // Se il popup è di successo → chiudi anche il form
-                if (popupData.color === "#ef9011" && onCancel) {
-                  onCancel();
-                }
+                if (popupData.color === "#ef9011" && onCancel) onCancel();
               }}
               color={popupData.color}
             />

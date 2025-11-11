@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { doc, setDoc } from "firebase/firestore"; // per salvare su Firestore
+import { auth, db } from "../firebase"; // importa anche db
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Auth.css";
 
 const RegisterPage = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [popupVisible, setPopupVisible] = useState(false);
@@ -16,10 +18,30 @@ const RegisterPage = () => {
     setError("");
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      setPopupVisible(true); // mostra popup di successo
+      // Crea l’utente su Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Salva username su Firestore
+      try {
+        await setDoc(doc(db, "users", user.uid), {
+          username: username,
+          email: email,
+          createdAt: new Date(),
+        });
+        console.log("Utente registrato su Firestore:", username);
+      } catch (firestoreError) {
+        console.error("Errore Firestore:", firestoreError);
+        throw new Error("Errore nel salvataggio su Firestore");
+      }
+
+      setPopupVisible(true);
     } catch (err) {
-      console.error("Errore registrazione:", err);
+      console.error("Errore nella registrazione:", err);
       setError("Errore nella registrazione. Prova con un'altra email.");
     }
   };
@@ -40,6 +62,15 @@ const RegisterPage = () => {
         <h2>Registrati</h2>
 
         <form onSubmit={handleRegister}>
+          {/* CAMPO USERNAME */}
+          <input
+            type="text"
+            placeholder="Nome utente"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+
           <input
             type="email"
             placeholder="Email"
@@ -47,6 +78,7 @@ const RegisterPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+
           <input
             type="password"
             placeholder="Password"

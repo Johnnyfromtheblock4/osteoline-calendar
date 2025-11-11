@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useEvents } from "../context/EventContext";
 import AddEvent from "../pages/AddEvent";
-import EventDetailPopup from "../components/EventDetailPopup"; 
+import EventDetailPopup from "../components/EventDetailPopup";
 import "../styles/DetailEventHome.css";
 
 const DetailEventHome = ({ selectedDate, onClose }) => {
-  const { events, removeEvent, updateEvent } = useEvents(); 
+  const { events, removeEvent, updateEvent } = useEvents();
   const [showAddForm, setShowAddForm] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null); 
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   // Conversione data
   const dateObj = new Date(selectedDate);
@@ -22,13 +22,22 @@ const DetailEventHome = ({ selectedDate, onClose }) => {
 
   // Funzioni di gestione evento
   const handleDeleteEvent = (eventToDelete) => {
-    removeEvent(eventToDelete); // elimina dal context
+    removeEvent(eventToDelete);
     setSelectedEvent(null);
   };
 
   const handleUpdateEvent = (updatedEvent) => {
-    updateEvent(updatedEvent); // aggiorna dal context
+    updateEvent(updatedEvent);
     setSelectedEvent(null);
+  };
+
+  // Raggruppa eventi per stanza
+  const groupedEvents = {
+    "Stanza Fede": dayEvents.filter((ev) => ev.room === "Stanza Fede"),
+    "Stanza Trattamenti": dayEvents.filter(
+      (ev) => ev.room === "Stanza Trattamenti"
+    ),
+    Palestra: dayEvents.filter((ev) => ev.room === "Palestra"),
   };
 
   return (
@@ -68,43 +77,64 @@ const DetailEventHome = ({ selectedDate, onClose }) => {
             {/* Elenco Eventi */}
             <div className="events-list mt-4 px-3 mb-5">
               {dayEvents.length === 0 ? (
-                <p className="text-center">
-                  Nessun evento per questo giorno.
+                <p className="text-center fs-5">
+                  Nessun appuntamento per questo giorno.
                 </p>
               ) : (
-                dayEvents.map((ev, index) => (
-                  <div
-                    key={index}
-                    className="event-card p-3 mb-3 text-white"
-                    onClick={() => setSelectedEvent(ev)} // apre popup
-                    style={{
-                      backgroundColor: ev.color,
-                      borderRadius: "10px",
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <div className="d-flex align-items-center">
-                      {/* Orari */}
-                      <div className="event-time text-center me-3">
-                        <div className="fw-bold">{ev.startTime}</div>
-                        <div className="small">{ev.endTime}</div>
-                      </div>
+                Object.entries(groupedEvents).map(([roomName, roomEvents]) => (
+                  <div key={roomName} className="room-section mb-5">
+                    {/* Titolo stanza */}
+                    <h4 className="text-uppercase fw-bold text-warning mb-3 text-center">
+                      {roomName}
+                    </h4>
 
-                      {/* Separatore verticale */}
-                      <div className="separator-vertical mx-3"></div>
+                    {roomEvents.length === 0 ? (
+                      <p className="text-center">
+                        Nessun evento in questa stanza.
+                      </p>
+                    ) : (
+                      roomEvents.map((ev) => (
+                        <div
+                          key={ev.id}
+                          className="event-card p-3 mb-3 text-white"
+                          onClick={() => setSelectedEvent(ev)}
+                          style={{
+                            backgroundColor: ev.color,
+                            borderRadius: "10px",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <div className="d-flex align-items-center">
+                            {/* Orari */}
+                            <div className="event-time text-center me-3">
+                              <div className="fw-bold">{ev.startTime}</div>
+                              <div className="small">{ev.endTime}</div>
+                            </div>
 
-                      {/* Info evento */}
-                      <div className="event-info flex-grow-1">
-                        <h5 className="m-0">{ev.title}</h5>
-                        {ev.description && (
-                          <p className="small mt-1 mb-0">{ev.description}</p>
-                        )}
-                      </div>
+                            {/* Separatore verticale */}
+                            <div className="separator-vertical mx-3"></div>
 
-                      {/* Icona utente a destra */}
-                      <i className="fa-solid fa-user fa-lg ms-3"></i>
-                    </div>
+                            {/* Info evento */}
+                            <div className="event-info flex-grow-1">
+                              <h5 className="m-0">{ev.title}</h5>
+                              {ev.description && (
+                                <p className="small mt-1 mb-0">
+                                  {ev.description}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Nome utente creatore */}
+                            <div className="event-user text-end ms-3">
+                              <span className="badge bg-dark px-2 py-1">
+                                {ev.createdByName || "Utente"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 ))
               )}

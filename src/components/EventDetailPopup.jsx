@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { auth } from "../firebase";
 import "../styles/EventDetailPopup.css";
 
 const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
@@ -8,9 +9,11 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
   const [restrictionMessage, setRestrictionMessage] = useState("");
   const [editedEvent, setEditedEvent] = useState({ ...event });
 
-  const hours = Array.from({ length: 24 }, (_, i) =>
-    String(i).padStart(2, "0")
-  );
+  // Utente loggato e controllo proprietà
+  const currentUser = auth.currentUser;
+  const isOwner = currentUser && currentUser.uid === event.ownerId;
+
+  const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
   const minutes = ["00", "15", "30", "45"];
 
   // Calcola differenza ore tra ora e evento
@@ -38,22 +41,24 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
     if (hoursDiff < 24) {
       setRestrictionMessage(
         hoursDiff < 0
-          ? "❌ Non puoi modificare un evento già passato."
-          : "⚠️ Non puoi modificare un evento che inizia tra meno di 24 ore."
+          ? "Non puoi modificare un evento già passato."
+          : "Non puoi modificare un evento che inizia tra meno di 24 ore."
       );
       setShowRestrictionPopup(true);
       return;
     }
 
+    // Aggiorna il colore in base alla stanza
     let newColor = editedEvent.color;
     if (editedEvent.room === "Stanza Fede") newColor = "#f39c12";
     else if (editedEvent.room === "Stanza Trattamenti") newColor = "#3498db";
     else if (editedEvent.room === "Palestra") newColor = "#27ae60";
 
-    const updated = { ...editedEvent, color: newColor };
+    const updated = { ...editedEvent, id: event.id, color: newColor };
+
+    // Aggiorna evento e chiudi modalità modifica
     onUpdate(updated);
     setIsEditing(false);
-    onClose();
   };
 
   // Eliminazione con blocco 24h
@@ -64,8 +69,8 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
       setShowConfirmDelete(false);
       setRestrictionMessage(
         hoursDiff < 0
-          ? "❌ Non puoi eliminare un evento già passato."
-          : "⚠️ Non puoi eliminare un evento che inizia tra meno di 24 ore."
+          ? "Non puoi eliminare un evento già passato."
+          : "Non puoi eliminare un evento che inizia tra meno di 24 ore."
       );
       setShowRestrictionPopup(true);
       return;
@@ -88,29 +93,32 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
             <i className="fa-solid fa-user fa-lg"></i>
           </div>
 
-          <div className="dropdown">
-            <button className="btn options-btn" data-bs-toggle="dropdown">
-              <i className="fa-solid fa-ellipsis-vertical"></i>
-            </button>
-            <ul className="dropdown-menu dropdown-menu-end">
-              <li>
-                <button
-                  className="dropdown-item"
-                  onClick={() => setIsEditing(true)}
-                >
-                  Modifica
-                </button>
-              </li>
-              <li>
-                <button
-                  className="dropdown-item text-danger"
-                  onClick={() => setShowConfirmDelete(true)}
-                >
-                  Elimina
-                </button>
-              </li>
-            </ul>
-          </div>
+          {/* Mostra il menu solo se l'utente è il proprietario */}
+          {isOwner && (
+            <div className="dropdown">
+              <button className="btn options-btn" data-bs-toggle="dropdown">
+                <i className="fa-solid fa-ellipsis-vertical"></i>
+              </button>
+              <ul className="dropdown-menu dropdown-menu-end">
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    Modifica
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item text-danger"
+                    onClick={() => setShowConfirmDelete(true)}
+                  >
+                    Elimina
+                  </button>
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* CORPO */}
@@ -170,9 +178,7 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
                       onChange={(e) =>
                         setEditedEvent({
                           ...editedEvent,
-                          endTime: `${e.target.value}:${
-                            editedEvent.endTime.split(":")[1]
-                          }`,
+                          endTime: `${e.target.value}:${editedEvent.endTime.split(":")[1]}`,
                         })
                       }
                     >
@@ -186,9 +192,7 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
                       onChange={(e) =>
                         setEditedEvent({
                           ...editedEvent,
-                          endTime: `${editedEvent.endTime.split(":")[0]}:${
-                            e.target.value
-                          }`,
+                          endTime: `${editedEvent.endTime.split(":")[0]}:${e.target.value}`,
                         })
                       }
                     >
@@ -240,12 +244,18 @@ const EventDetailPopup = ({ event, onClose, onDelete, onUpdate }) => {
             </>
           ) : (
             <>
-              <h3 className="fw-bold mb-3">{event.title}</h3>
+              <h3 className="fw-bold mb-3">{editedEvent.title}</h3>
               <p className="mb-2">
-                {event.startTime} - {event.endTime}
+                {editedEvent.startTime} - {editedEvent.endTime}
               </p>
-              <p className="badge bg-warning text-dark">{event.room}</p>
-              <p className="mt-3">{event.description || "Nessuna nota"}</p>
+              <p className="badge bg-warning text-dark">{editedEvent.room}</p>
+              <p className="mt-3">
+                {editedEvent.description || "Nessuna nota"}
+              </p>
+
+              <p className="text-muted mt-3">
+                Creato da: <strong>{event.createdByName || "Utente"}</strong>
+              </p>
             </>
           )}
         </div>
