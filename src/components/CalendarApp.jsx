@@ -65,6 +65,9 @@ const CalendarApp = () => {
       .sort((a, b) => (a.startTime > b.startTime ? 1 : -1));
   };
 
+  console.log("Eventi caricati dal context:", events);
+
+
   return (
     <>
       <Header />

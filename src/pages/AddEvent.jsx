@@ -89,12 +89,10 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
       return;
     }
 
-    // Calcola data e ora dell'evento
     const eventDateTime = new Date(`${date}T${startHour}:${startMinute}:00`);
     const now = new Date();
     const hoursDiff = (eventDateTime - now) / (1000 * 60 * 60);
 
-    // Blocca solo se l'evento è nel passato (non se mancano meno di 24h)
     if (hoursDiff < 0) {
       setPopupData({
         title: "Attenzione!",
@@ -106,9 +104,8 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
       return;
     }
 
-    // Crea nuovo evento con riferimento all'utente loggato
+    // Prepara il nuovo evento con ownerId e createdByName
     const newEvent = {
-      id: crypto.randomUUID(), // id univoco per ogni evento
       title,
       date,
       room,
@@ -124,11 +121,12 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
       startTime: `${startHour}:${startMinute}`,
       endTime: `${endHour}:${endMinute}`,
       description,
-      ownerId: user.uid,
-      createdByName: username,
+      ownerId: user.uid, // UID utente loggato
+      createdByName: username, // Nome utente preso da Firestore
       createdAt: new Date().toISOString(),
     };
 
+    // Verifica conflitti locali
     if (hasConflict(newEvent)) {
       setPopupData({
         title: "Attenzione!",
@@ -139,25 +137,38 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
       return;
     }
 
-    addEvent(newEvent);
+    try {
+      // Salva evento su Firestore (tramite EventContext)
+      await addEvent(newEvent);
 
-    setPopupData({
-      title: "Evento creato!",
-      message: "Il tuo evento è stato aggiunto correttamente al calendario.",
-      color: "#ef9011",
-    });
-    setShowPopup(true);
+      console.log("Evento salvato su Firestore:", newEvent);
 
-    // Reset form
-    setTitle("");
-    setAllDay(false);
-    setRoom("");
-    setStartHour("00");
-    setStartMinute("00");
-    setEndHour("01");
-    setEndMinute("00");
-    setDescription("");
-    setDate(defaultDate);
+      setPopupData({
+        title: "Evento creato!",
+        message: "Il tuo evento è stato aggiunto correttamente al calendario.",
+        color: "#ef9011",
+      });
+      setShowPopup(true);
+
+      // Reset form
+      setTitle("");
+      setAllDay(false);
+      setRoom("");
+      setStartHour("00");
+      setStartMinute("00");
+      setEndHour("01");
+      setEndMinute("00");
+      setDescription("");
+      setDate(defaultDate);
+    } catch (error) {
+      console.error("Errore durante la creazione evento:", error);
+      setPopupData({
+        title: "Errore",
+        message: "Impossibile salvare l’evento. Riprova più tardi.",
+        color: "#dc3545",
+      });
+      setShowPopup(true);
+    }
   };
 
   return (
