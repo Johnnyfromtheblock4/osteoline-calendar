@@ -257,18 +257,10 @@ const HourCounter = () => {
                 </button>
               </div>
             )}
-
-            {/* SEZIONE NOTE */}
-            <h2 className="hour-counter-subtitle text-warning mt-4">Note</h2>
-            <p>
-              Qui andrà una textarea con relativo pulsante “Aggiungi” che crea
-              una card con data, titolo e nota, con tasti di modifica,
-              eliminazione e copia.
-            </p>
           </div>
 
           {/* LOGOUT */}
-          <div className="col-12 mb-4">
+          <div className="col-12 my-4">
             <button
               className="btn btn-danger logout-btn"
               onClick={handleLogout}
