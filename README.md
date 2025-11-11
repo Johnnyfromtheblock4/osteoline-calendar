@@ -1,7 +1,6 @@
-## Osteoline Calendario
+## ISTRUZIONI CALENDARIO OSTEOLINE
 
-🗓️ Istruzioni Osteoline Calendario
-Introduzione
+📜 Introduzione
 Osteoline Calendario è un’applicazione web per la gestione degli appuntamenti del centro Osteoline.
 Consente a più utenti di:
 creare, modificare e visualizzare eventi in base alla data e alla stanza;
@@ -17,6 +16,12 @@ username: nome scelto;
 isAdmin: impostato di default su false.
 Dopo la registrazione o il login (/login), si accede alla Homepage del calendario.
 
+☰ Menù in basso
+In basso nella Homepage e in tutte le altre pagine si trova un menu che permette di navigare in questo modo:
+Prima icona a sinistra (calendario 📆) permette di andare al calendario principale;
+Seconda icona centrale (tasto più ╋) permette di andare alla sezione Aggiungi un Evento;
+Terza icona a destra (profilo 👤) permette di accedere all propria area riservata;
+
 🏠 Homepage – Calendario principale
 Funzioni principali
 Mostra il calendario giornaliero con le stanze:
@@ -26,7 +31,8 @@ Palestra (verde 🟢)
 Ogni giorno mostra gli appuntamenti ordinati per orario.
 Pulsante “+” in alto a destra → apre il modulo per aggiungere un nuovo evento.
 Pulsante Chiudi → torna alla schermata principale.
-Visualizzazione giornaliera
+
+🗓 Visualizzazione giornaliera
 Quando si clicca su un giorno nel calendario:
 Appare il pannello dettagli giornaliero;
 Vengono mostrati tutti gli appuntamenti divisi per stanza;
@@ -43,11 +49,12 @@ Stanza	"Selezione tra “Stanza Fede”, “Stanza Trattamenti”, “Palestra�
 Orario Inizio / Fine	Ora e minuti dell’evento
 Descrizione	Campo opzionale (max 60 caratteri)
 
-Logiche automatiche
+🤖 Logiche automatiche
 Quando si imposta l’orario d’inizio, l’orario di fine viene automaticamente impostato a +1 ora.
 Se l’utente cerca di creare un evento in un orario già passato, riceverà un messaggio di errore.
 È possibile creare eventi anche entro 24 ore, ma non modificarli o eliminarli nelle 24 ore precedenti all’inizio.
-Conflitti
+
+⚔️ Conflitti
 Il sistema controlla che non ci siano sovrapposizioni tra orari nella stessa stanza.
  Se esiste un conflitto, appare un messaggio d’errore:
 “La stanza è già occupata per questo orario.”
@@ -59,7 +66,8 @@ Si apre una finestra con tutte le informazioni (titolo, orario, descrizione, ute
 Se l’utente è il proprietario e mancano più di 24 ore, può:
 Modificare l’evento;
 Eliminare l’evento.
-Restrizioni
+
+🚫 Restrizioni
 Non si possono modificare o cancellare eventi che iniziano tra meno di 24 ore.
 Non si possono aggiungere eventi nel passato.
 
@@ -68,7 +76,8 @@ Ogni utente può accedere alla sezione Profilo (/HourCounter) per:
 visualizzare il conteggio totale delle ore lavorate nel mese corrente;
 vedere il dettaglio per stanza;
 esportare un riepilogo personale in formato PDF.
-Funzionalità della pagina Profilo
+
+💻 Funzionalità della pagina Profilo
 Mostra un riepilogo delle ore per stanza:
 Stanza Fede: 5h 30m
 Stanza Trattamenti: 3h 15m
@@ -78,7 +87,8 @@ Pulsante “Esporta in PDF” → genera un file PDF personale con:
 ore totali per stanza;
 lista appuntamenti del mese;
 totale generale.
-Logout
+
+➜] Logout
 Il pulsante Logout termina la sessione e riporta alla schermata di accesso.
 
 🔐 Accesso Amministratore – RedRoom
@@ -100,7 +110,7 @@ selezionare un mese disponibile dal menu a tendina;
 vedere tutti i mesi in cui ci sono eventi (es. novembre 2025, dicembre 2025);
 cliccare “Esporta e Pulisci Mese” per agire solo sul mese scelto.
 
-Esportazione
+📥 Esportazione
 Viene generato un PDF completo con:
 eventi ordinati per data e orario;
 autore di ogni evento;
@@ -112,8 +122,8 @@ Totale ore per utente
 Utente          Totale Ore
 Simone          12h 45m
 Marco           8h 15m
-Eliminazione
 
+🗑️ Eliminazione
 Dopo l’esportazione:
 vengono eliminati solo gli eventi del mese selezionato;
 tutti gli altri (futuri o di altri mesi) vengono mantenuti.
