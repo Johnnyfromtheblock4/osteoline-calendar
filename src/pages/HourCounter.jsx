@@ -89,11 +89,11 @@ const HourCounter = () => {
     return acc;
   }, {});
 
-  // Formatta ore senza ".0"
-  const formatHours = (minutesTotal) => {
-    const h = Math.floor(minutesTotal / 60);
-    const m = minutesTotal % 60;
-    return `${h}h ${m.toString().padStart(2, "0")}m`;
+  // Formatta minuti in formato "H:MM"
+  const formatHours = (totalMinutes) => {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours}:${minutes.toString().padStart(2, "0")}`;
   };
 
   // Esporta PDF (solo eventi dell'utente loggato)
@@ -208,7 +208,7 @@ const HourCounter = () => {
                 <p className="fw-bold text-light fs-5">
                   Totale mese:{" "}
                   <span className="text-warning">
-                    {formatHours(totalHours)} ore
+                    {formatHours(totalMinutes)} ore
                   </span>
                 </p>
 
