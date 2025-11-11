@@ -9,9 +9,10 @@ import HourCounter from "./pages/HourCounter";
 import Footer from "./components/Footer";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import RedRoom from "./pages/RedRoom";
+
 import { EventProvider } from "./context/EventContext";
 import { DateProvider } from "./context/DateContext";
-import RedRoom from "./pages/RedRoom"; // Nuova pagina segreta admin
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -25,15 +26,22 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return null;
+  // Mostra un loader temporaneo
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <h4>Caricamento...</h4>
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>
+      {/* 🔹 L’EventProvider è sempre attivo, anche prima del login */}
       <EventProvider>
         <DateProvider>
           <div className="app-wrapper">
             <Routes>
-              {/* Accesso controllato */}
               <Route
                 path="/"
                 element={user ? <Homepage /> : <Navigate to="/login" />}
@@ -46,12 +54,10 @@ const App = () => {
                 path="/HourCounter"
                 element={user ? <HourCounter /> : <Navigate to="/login" />}
               />
-              {/* Pagina Admin */}
               <Route
                 path="/redroom"
                 element={user ? <RedRoom /> : <Navigate to="/login" />}
               />
-              {/* Autenticazione */}
               <Route
                 path="/login"
                 element={!user ? <LoginPage /> : <Navigate to="/" />}
@@ -59,6 +65,7 @@ const App = () => {
               <Route path="/register" element={<RegisterPage />} />
             </Routes>
 
+            {/* Il footer solo se loggato */}
             {user && <Footer />}
           </div>
         </DateProvider>
