@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { auth, db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { useEvents } from "../context/EventContext";
 import jsPDF from "jspdf";
@@ -9,7 +9,7 @@ import "../styles/RedRoom.css";
 
 const RedRoom = () => {
   const navigate = useNavigate();
-  const { events, clearAllEvents } = useEvents();
+  const { events } = useEvents();
   const [isAdmin, setIsAdmin] = useState(false);
   const [checking, setChecking] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
@@ -80,12 +80,13 @@ const RedRoom = () => {
   }, [filteredEvents]);
 
   // Esporta e cancella solo il mese selezionato
-  const exportAndClearMonth = () => {
+  const exportAndClearMonth = async () => {
     if (!selectedMonth || filteredEvents.length === 0) {
       alert("Seleziona un mese valido con eventi.");
       return;
     }
 
+    // Genera PDF
     const docPdf = new jsPDF();
     const [year, month] = selectedMonth.split("-");
     const monthName = new Date(`${year}-${month}-01`).toLocaleString("it-IT", {
@@ -144,7 +145,7 @@ const RedRoom = () => {
       ([user, totalMins]) => {
         const h = Math.floor(totalMins / 60);
         const m = totalMins % 60;
-        return [user, `${h}h ${m.toString().padStart(2, "0")}m`];
+        return [user, `${h}:${m.toString().padStart(2, "0")}`];
       }
     );
 
@@ -157,24 +158,20 @@ const RedRoom = () => {
       margin: { left: 14, right: 14 },
     });
 
-    // Esporta PDF
+    // Salva PDF
     const ts = new Date().toISOString().replace(/[:.]/g, "-");
     docPdf.save(`Calendario_${monthName}_${year}_${ts}.pdf`);
 
-    // Mantiene solo eventi non del mese selezionato
-    const remaining = events.filter((ev) => {
-      const d = new Date(ev.date);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-        2,
-        "0"
-      )}`;
-      return key !== selectedMonth;
-    });
-    // Pulisce e reimposta quelli rimanenti
-    clearAllEvents();
-    remaining.forEach((e) => events.push(e));
-
-    setShowPopup(true);
+    // Elimina solo eventi del mese selezionato da Firestore
+    try {
+      for (const ev of filteredEvents) {
+        await deleteDoc(doc(db, "events", ev.id));
+      }
+      setShowPopup(true);
+    } catch (error) {
+      console.error("Errore durante la cancellazione del mese:", error);
+      alert("Errore durante la cancellazione degli eventi di questo mese.");
+    }
   };
 
   if (checking) return null;
@@ -235,10 +232,7 @@ const RedRoom = () => {
         </button>
       </div>
 
-      <button
-        className="btn btn-secondary"
-        onClick={() => navigate(-1)}
-      >
+      <button className="btn btn-secondary" onClick={() => navigate(-1)}>
         Annulla
       </button>
 
