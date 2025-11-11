@@ -11,6 +11,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { EventProvider } from "./context/EventContext";
 import { DateProvider } from "./context/DateContext";
+import RedRoom from "./pages/RedRoom"; // Nuova pagina segreta admin
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -45,7 +46,11 @@ const App = () => {
                 path="/HourCounter"
                 element={user ? <HourCounter /> : <Navigate to="/login" />}
               />
-
+              {/* Pagina Admin */}
+              <Route
+                path="/redroom"
+                element={user ? <RedRoom /> : <Navigate to="/login" />}
+              />
               {/* Autenticazione */}
               <Route
                 path="/login"

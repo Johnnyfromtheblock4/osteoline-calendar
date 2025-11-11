@@ -1,16 +1,18 @@
 import "../styles/HourCounter.css";
 import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { useEvents } from "../context/EventContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { doc, getDoc } from "firebase/firestore";
 
 const HourCounter = () => {
   const navigate = useNavigate();
   const { events } = useEvents();
   const [showAppointments, setShowAppointments] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Utente loggato
   const currentUser = auth.currentUser;
@@ -24,6 +26,24 @@ const HourCounter = () => {
       console.error("Errore durante il logout:", error);
     }
   };
+
+  // Controllo ruolo admin su Firestore
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        const ref = doc(db, "users", user.uid);
+        const snap = await getDoc(ref);
+        if (snap.exists() && snap.data().isAdmin === true) {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        console.error("Errore nel controllo ruolo admin:", error);
+      }
+    };
+    fetchUserRole();
+  }, []);
 
   // Data e mese corrente
   const now = new Date();
@@ -44,14 +64,23 @@ const HourCounter = () => {
   const roomHours = userMonthEvents.reduce((acc, ev) => {
     const start = new Date(`${ev.date}T${ev.startTime}:00`);
     const end = new Date(`${ev.date}T${ev.endTime}:00`);
-    let diffHours = (end - start) / (1000 * 60 * 60);
-    if (diffHours < 0) diffHours += 24;
-    acc[ev.room] = (acc[ev.room] || 0) + diffHours;
+    let diffMs = end - start;
+    if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
+
+    // Calcolo ore e minuti reali
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    // Converte tutto in minuti per somma corretta
+    acc[ev.room] = (acc[ev.room] || 0) + hours * 60 + minutes;
+
     return acc;
   }, {});
 
   // Calcola totale generale
-  const totalHours = Object.values(roomHours).reduce((sum, h) => sum + h, 0);
+  const totalMinutes = Object.values(roomHours).reduce((sum, m) => sum + m, 0);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const totalRemainingMinutes = totalMinutes % 60;
 
   // Raggruppa appuntamenti per stanza
   const groupedEvents = userMonthEvents.reduce((acc, ev) => {
@@ -61,11 +90,13 @@ const HourCounter = () => {
   }, {});
 
   // Formatta ore senza ".0"
-  const formatHours = (num) => {
-    return Number.isInteger(num) ? num : num.toFixed(2).replace(/\.00$/, "");
+  const formatHours = (minutesTotal) => {
+    const h = Math.floor(minutesTotal / 60);
+    const m = minutesTotal % 60;
+    return `${h}h ${m.toString().padStart(2, "0")}m`;
   };
 
-  // Funzione per esportare PDF (solo eventi dell'utente loggato)
+  // Esporta PDF (solo eventi dell'utente loggato)
   const handleExportPDF = () => {
     if (Object.keys(roomHours).length === 0) return;
 
@@ -76,21 +107,29 @@ const HourCounter = () => {
 
     const username = userMonthEvents[0]?.createdByName || "Utente";
 
-    // Titolo
     doc.setFontSize(18);
     doc.text(`Riepilogo Ore - ${username}`, 14, 20);
     doc.setFontSize(14);
     doc.text(`${monthName} ${currentYear}`, 14, 28);
 
-    // Ore per stanza
     doc.setFontSize(14);
     doc.text("Ore per Stanza:", 14, 40);
 
-    const roomTable = Object.entries(roomHours).map(([room, hours]) => [
+    const roomTable = Object.entries(roomHours).map(([room, minutes]) => [
       room,
-      `${formatHours(hours)} ore`,
+      formatHours(minutes),
     ]);
-    roomTable.push(["Totale", `${formatHours(totalHours)} ore`]);
+
+    // Calcola il totale reale in minuti
+    const totalMinutes = Object.values(roomHours).reduce(
+      (sum, m) => sum + m,
+      0
+    );
+    const totalH = Math.floor(totalMinutes / 60);
+    const totalM = totalMinutes % 60;
+    const totalFormatted = `${totalH}h ${totalM.toString().padStart(2, "0")}m`;
+
+    roomTable.push(["Totale", totalFormatted]);
 
     autoTable(doc, {
       startY: 45,
@@ -100,14 +139,12 @@ const HourCounter = () => {
       headStyles: { fillColor: [239, 144, 17] },
     });
 
-    // Lista appuntamenti
     let y = doc.lastAutoTable.finalY + 10;
     doc.setFontSize(14);
     doc.text("Lista Appuntamenti", 14, y);
     y += 5;
 
     Object.entries(groupedEvents).forEach(([room, roomEvents]) => {
-      // Colore stanza
       doc.setFontSize(12);
       doc.setTextColor(
         room === "Stanza Fede" ? 243 : room === "Stanza Trattamenti" ? 52 : 39,
@@ -147,7 +184,7 @@ const HourCounter = () => {
 
       <div className="hour-counter-container container d-flex justify-content-center align-items-center mt-4">
         <div className="hour-counter-box row text-center">
-          {/* CONTEGGIO ORE */}
+          {/* Conteggio ore */}
           <div className="col-12">
             <h2 className="hour-counter-subtitle text-warning">
               Conteggio ore mese corrente
@@ -174,6 +211,17 @@ const HourCounter = () => {
                     {formatHours(totalHours)} ore
                   </span>
                 </p>
+
+                {/* Totale ore utente */}
+                {userMonthEvents.length > 0 && (
+                  <p className="text-secondary mt-2">
+                    Totale ore eseguite da{" "}
+                    <span className="text-warning fw-bold">
+                      {userMonthEvents[0]?.createdByName || "Utente"}
+                    </span>
+                    : {formatHours(totalHours)} ore
+                  </p>
+                )}
               </div>
             ) : (
               <p className="text-secondary">
@@ -181,7 +229,7 @@ const HourCounter = () => {
               </p>
             )}
 
-            {/* BOTTONE MOSTRA/NASCONDI LISTA */}
+            {/* Bottone mostra/nascondi lista */}
             {userMonthEvents.length > 0 && (
               <div className="mt-4">
                 <button
@@ -193,7 +241,7 @@ const HourCounter = () => {
               </div>
             )}
 
-            {/* LISTA APPUNTAMENTI */}
+            {/* Lista appuntamenti */}
             {showAppointments && (
               <div className="appointments-list mt-4 text-start">
                 {Object.entries(groupedEvents).map(([room, roomEvents]) => (
@@ -245,7 +293,7 @@ const HourCounter = () => {
               </div>
             )}
 
-            {/* BOTTONE ESPORTA PDF */}
+            {/* Bottone esporta PDF */}
             {userMonthEvents.length > 0 && (
               <div className="col-12 mt-4">
                 <button
@@ -259,7 +307,7 @@ const HourCounter = () => {
             )}
           </div>
 
-          {/* LOGOUT */}
+          {/* Logout */}
           <div className="col-12 my-4">
             <button
               className="btn btn-danger logout-btn"
@@ -268,6 +316,18 @@ const HourCounter = () => {
               <i className="fa-solid fa-right-from-bracket me-2"></i> Logout
             </button>
           </div>
+
+          {/* Pulsante Admin Panel, visibile solo se isAdmin */}
+          {isAdmin && (
+            <div className="col-12 mb-4">
+              <button
+                className="btn btn-info fw-bold"
+                onClick={() => navigate("/redroom")}
+              >
+                <i className="fa-solid fa-user-secret me-2"></i> Admin Panel
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>

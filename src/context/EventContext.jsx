@@ -7,9 +7,7 @@ export const EventProvider = ({ children }) => {
 
   // Aggiungi evento
   const addEvent = (newEvent) => {
-    // Se manca l'id (per sicurezza), generane uno
-    const eventWithId = newEvent.id ? newEvent : { ...newEvent, id: crypto.randomUUID() };
-    setEvents((prev) => [...prev, eventWithId]);
+    setEvents((prev) => [...prev, newEvent]);
   };
 
   // Elimina evento
@@ -24,8 +22,15 @@ export const EventProvider = ({ children }) => {
     );
   };
 
+  // Svuota tutti gli eventi (funzione per admin)
+  const clearAllEvents = () => {
+    setEvents([]);
+  };
+
   return (
-    <EventContext.Provider value={{ events, addEvent, removeEvent, updateEvent }}>
+    <EventContext.Provider
+      value={{ events, addEvent, removeEvent, updateEvent, clearAllEvents }}
+    >
       {children}
     </EventContext.Provider>
   );
