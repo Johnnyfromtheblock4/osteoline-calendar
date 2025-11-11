@@ -8,7 +8,6 @@ FUNZIONI RICHIESTE:
 
 FUNZIONI DA IMPLEMENTARE:
 - Evento che inizia tra 24 ore si
-- Etichetta utente (quando prendo appuntamento)
 - Responsive
 
 

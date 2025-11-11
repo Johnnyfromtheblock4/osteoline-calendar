@@ -94,14 +94,12 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
     const now = new Date();
     const hoursDiff = (eventDateTime - now) / (1000 * 60 * 60);
 
-    // Blocco se meno di 24 ore o già passato
-    if (hoursDiff < 24) {
+    // Blocca solo se l'evento è nel passato (non se mancano meno di 24h)
+    if (hoursDiff < 0) {
       setPopupData({
         title: "Attenzione!",
         message:
-          hoursDiff < 0
-            ? "Non puoi aggiungere un evento in una data o orario già passato."
-            : "Non puoi aggiungere un evento che inizia tra meno di 24 ore.",
+          "Non puoi aggiungere un evento in una data o orario già passato.",
         color: "#dc3545",
       });
       setShowPopup(true);
