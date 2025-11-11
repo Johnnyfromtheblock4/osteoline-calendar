@@ -5,14 +5,17 @@ import { useNavigate } from "react-router-dom";
 import { useEvents } from "../context/EventContext";
 import { useState } from "react";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; // ✅ Import corretto
+import autoTable from "jspdf-autotable";
 
 const HourCounter = () => {
   const navigate = useNavigate();
   const { events } = useEvents();
   const [showAppointments, setShowAppointments] = useState(false);
 
-  // 🔹 LOGOUT
+  // Utente loggato
+  const currentUser = auth.currentUser;
+
+  // LOGOUT
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -22,62 +25,66 @@ const HourCounter = () => {
     }
   };
 
-  // 📆 Data e mese corrente
+  // Data e mese corrente
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  // 🔹 Filtra eventi del mese corrente
-  const currentMonthEvents = events.filter((ev) => {
+  // Filtra eventi del mese corrente e dell'utente loggato
+  const userMonthEvents = events.filter((ev) => {
     const eventDate = new Date(ev.date);
     return (
       eventDate.getMonth() === currentMonth &&
-      eventDate.getFullYear() === currentYear
+      eventDate.getFullYear() === currentYear &&
+      ev.ownerId === currentUser?.uid
     );
   });
 
-  // 🔹 Calcola ore totali per stanza
-  const roomHours = currentMonthEvents.reduce((acc, ev) => {
+  // Calcola ore totali per stanza (solo per l'utente)
+  const roomHours = userMonthEvents.reduce((acc, ev) => {
     const start = new Date(`${ev.date}T${ev.startTime}:00`);
     const end = new Date(`${ev.date}T${ev.endTime}:00`);
     let diffHours = (end - start) / (1000 * 60 * 60);
-    if (diffHours < 0) diffHours += 24; // gestisce eventi che superano la mezzanotte
+    if (diffHours < 0) diffHours += 24;
     acc[ev.room] = (acc[ev.room] || 0) + diffHours;
     return acc;
   }, {});
 
-  // 🔹 Calcola totale generale
+  // Calcola totale generale
   const totalHours = Object.values(roomHours).reduce((sum, h) => sum + h, 0);
 
-  // 🔹 Raggruppa appuntamenti per stanza
-  const groupedEvents = currentMonthEvents.reduce((acc, ev) => {
+  // Raggruppa appuntamenti per stanza
+  const groupedEvents = userMonthEvents.reduce((acc, ev) => {
     if (!acc[ev.room]) acc[ev.room] = [];
     acc[ev.room].push(ev);
     return acc;
   }, {});
 
-  // 🔹 Formatta ore senza ".0"
+  // Formatta ore senza ".0"
   const formatHours = (num) => {
     return Number.isInteger(num) ? num : num.toFixed(2).replace(/\.00$/, "");
   };
 
-  // 📄 Funzione per esportare PDF
+  // Funzione per esportare PDF (solo eventi dell'utente loggato)
   const handleExportPDF = () => {
-    if (Object.keys(roomHours).length === 0) return; // nessun evento
-    console.log("Generazione PDF avviata");
+    if (Object.keys(roomHours).length === 0) return;
 
     const doc = new jsPDF();
     const monthName = now
       .toLocaleString("it-IT", { month: "long" })
       .toUpperCase();
 
+    const username = userMonthEvents[0]?.createdByName || "Utente";
+
     // Titolo
     doc.setFontSize(18);
-    doc.text(`Riepilogo Ore - ${monthName} ${currentYear}`, 14, 20);
+    doc.text(`Riepilogo Ore - ${username}`, 14, 20);
+    doc.setFontSize(14);
+    doc.text(`${monthName} ${currentYear}`, 14, 28);
 
     // Ore per stanza
     doc.setFontSize(14);
-    doc.text("Ore per Stanza:", 14, 35);
+    doc.text("Ore per Stanza:", 14, 40);
 
     const roomTable = Object.entries(roomHours).map(([room, hours]) => [
       room,
@@ -86,7 +93,7 @@ const HourCounter = () => {
     roomTable.push(["Totale", `${formatHours(totalHours)} ore`]);
 
     autoTable(doc, {
-      startY: 40,
+      startY: 45,
       head: [["Stanza", "Ore Totali"]],
       body: roomTable,
       styles: { fontSize: 11 },
@@ -100,7 +107,7 @@ const HourCounter = () => {
     y += 5;
 
     Object.entries(groupedEvents).forEach(([room, roomEvents]) => {
-      // Colori stanza
+      // Colore stanza
       doc.setFontSize(12);
       doc.setTextColor(
         room === "Stanza Fede" ? 243 : room === "Stanza Trattamenti" ? 52 : 39,
@@ -112,7 +119,6 @@ const HourCounter = () => {
         room === "Stanza Fede" ? 18 : room === "Stanza Trattamenti" ? 219 : 96
       );
 
-      // Nome stanza
       doc.text(room, 14, y + 8);
 
       autoTable(doc, {
@@ -131,18 +137,17 @@ const HourCounter = () => {
       y = doc.lastAutoTable.finalY + 10;
     });
 
-    // 🔹 Salva PDF
-    doc.save(`Riepilogo_Ore_${monthName}_${currentYear}.pdf`);
+    doc.save(`Riepilogo_${username}_${monthName}_${currentYear}.pdf`);
   };
 
-  // 🔹 Rendering
+  // Rendering
   return (
     <>
       <h1 className="hour-counter-title my-4 text-center">Profilo</h1>
 
       <div className="hour-counter-container container d-flex justify-content-center align-items-center mt-4">
         <div className="hour-counter-box row text-center">
-          {/* --- CONTEGGIO ORE --- */}
+          {/* CONTEGGIO ORE */}
           <div className="col-12">
             <h2 className="hour-counter-subtitle text-warning">
               Conteggio ore mese corrente
@@ -172,12 +177,12 @@ const HourCounter = () => {
               </div>
             ) : (
               <p className="text-secondary">
-                Nessun evento registrato questo mese.
+                Nessun evento registrato da te questo mese.
               </p>
             )}
 
-            {/* --- BOTTONE MOSTRA/NASCONDI LISTA --- */}
-            {currentMonthEvents.length > 0 && (
+            {/* BOTTONE MOSTRA/NASCONDI LISTA */}
+            {userMonthEvents.length > 0 && (
               <div className="mt-4">
                 <button
                   className="btn btn-warning fw-bold"
@@ -188,7 +193,7 @@ const HourCounter = () => {
               </div>
             )}
 
-            {/* --- LISTA APPUNTAMENTI --- */}
+            {/* LISTA APPUNTAMENTI */}
             {showAppointments && (
               <div className="appointments-list mt-4 text-start">
                 {Object.entries(groupedEvents).map(([room, roomEvents]) => (
@@ -240,8 +245,8 @@ const HourCounter = () => {
               </div>
             )}
 
-            {/* --- BOTTONE ESPORTA PDF --- */}
-            {currentMonthEvents.length > 0 && (
+            {/* BOTTONE ESPORTA PDF */}
+            {userMonthEvents.length > 0 && (
               <div className="col-12 mt-4">
                 <button
                   className="btn btn-outline-light fw-bold"
@@ -253,7 +258,7 @@ const HourCounter = () => {
               </div>
             )}
 
-            {/* --- SEZIONE NOTE --- */}
+            {/* SEZIONE NOTE */}
             <h2 className="hour-counter-subtitle text-warning mt-4">Note</h2>
             <p>
               Qui andrà una textarea con relativo pulsante “Aggiungi” che crea
@@ -262,7 +267,7 @@ const HourCounter = () => {
             </p>
           </div>
 
-          {/* --- LOGOUT --- */}
+          {/* LOGOUT */}
           <div className="col-12 mb-4">
             <button
               className="btn btn-danger logout-btn"
