@@ -1,0 +1,15 @@
+/* Rimuove bordo e ombra da tutti i bottoni dentro la pagina RedRoom */
+.container .btn {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Mantiene l'effetto hover pulito senza bordo */
+.container .btn:hover,
+.container .btn:focus,
+.container .btn:active {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}

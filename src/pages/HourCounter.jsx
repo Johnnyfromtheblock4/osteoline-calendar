@@ -297,10 +297,10 @@ const HourCounter = () => {
             {userMonthEvents.length > 0 && (
               <div className="col-12 mt-4">
                 <button
-                  className="btn btn-outline-light fw-bold"
+                  className="btn btn-light fw-bold"
                   onClick={handleExportPDF}
                 >
-                  <i className="fa-solid fa-file-pdf me-2 text-danger"></i>
+                  <i className="fa-solid fa-file-pdf me-2"></i>
                   Esporta in PDF
                 </button>
               </div>

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useEvents } from "../context/EventContext";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import "../styles/RedRoom.css";
 
 const RedRoom = () => {
   const navigate = useNavigate();
@@ -235,7 +236,7 @@ const RedRoom = () => {
       </div>
 
       <button
-        className="btn btn-outline-secondary"
+        className="btn btn-secondary"
         onClick={() => navigate(-1)}
       >
         Annulla
