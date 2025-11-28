@@ -26,6 +26,14 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
     color: "#ef9011",
   });
 
+  const hours = Array.from({ length: 24 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
+
+  const minutes = Array.from({ length: 60 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
+
   // Recupera username dell'utente loggato da Firestore
   useEffect(() => {
     const fetchUsername = async () => {
@@ -246,62 +254,74 @@ const AddEvent = ({ defaultDate = "", onCancel }) => {
                   Orario
                 </label>
                 <div className="row">
+                  {/* ORARIO INIZIO */}
                   <div className="col-6">
                     <div className="time-input">
                       <span>Inizio</span>
-                      <div>
-                        <input
-                          type="number"
-                          min={0}
-                          max={23}
-                          className="hours"
+                      <div className="d-flex gap-2">
+                        <select
+                          className="form-select hours"
                           value={startHour}
                           onChange={(e) =>
                             handleStartHourChange(e.target.value)
                           }
-                          required
-                        />
-                        <input
-                          type="number"
-                          min={0}
-                          max={59}
-                          className="minutes"
+                        >
+                          {hours.map((h) => (
+                            <option key={h} value={h}>
+                              {h}
+                            </option>
+                          ))}
+                        </select>
+
+                        <select
+                          className="form-select minutes"
                           value={startMinute}
                           onChange={(e) =>
                             handleStartMinuteChange(e.target.value)
                           }
-                          required
-                        />
+                        >
+                          {minutes.map((m) => (
+                            <option key={m} value={m}>
+                              {m}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                   </div>
 
+                  {/* ORARIO FINE */}
                   <div className="col-6">
                     <div className="time-input text-end">
                       <span>Fine</span>
-                      <div>
-                        <input
-                          type="number"
-                          min={0}
-                          max={23}
-                          className="hours"
+                      <div className="d-flex gap-2 justify-content-end">
+                        <select
+                          className="form-select hours"
                           value={endHour}
                           onChange={(e) =>
                             setEndHour(e.target.value.padStart(2, "0"))
                           }
-                          required
-                        />
-                        <input
-                          type="number"
-                          min={0}
-                          max={59}
-                          className="minutes"
+                        >
+                          {hours.map((h) => (
+                            <option key={h} value={h}>
+                              {h}
+                            </option>
+                          ))}
+                        </select>
+
+                        <select
+                          className="form-select minutes"
                           value={endMinute}
                           onChange={(e) =>
                             setEndMinute(e.target.value.padStart(2, "0"))
                           }
-                          required
-                        />
+                        >
+                          {minutes.map((m) => (
+                            <option key={m} value={m}>
+                              {m}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                   </div>

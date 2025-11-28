@@ -23,10 +23,9 @@
   border-radius: 0.5rem;
   padding: 0.8rem;
   font-size: 1.4rem;
-  color: #ffffff; 
-  caret-color: #ef9011; 
+  color: #ffffff;
+  caret-color: #ef9011;
 }
-
 
 .custom-input::placeholder,
 .custom-textarea::placeholder {
@@ -97,6 +96,17 @@
   padding: 0.8rem 2rem;
 }
 
+/* Nasconde scrollbar su Chrome, Edge, Safari */
+select::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+/* Nasconde scrollbar su Firefox */
+select {
+  scrollbar-width: none;
+}
+
 /* Responsività */
 @media (max-width: 768px) {
   .add-event-box {
@@ -123,16 +133,16 @@
   }
 
   .add-event-title {
-    font-size: 1.8rem; 
+    font-size: 1.8rem;
   }
 
   .form-label {
-    font-size: 0.9rem; 
+    font-size: 0.9rem;
   }
 
   .custom-input,
   .custom-textarea {
-    font-size: 1.1rem; 
+    font-size: 1.1rem;
     padding: 0.6rem;
   }
 
@@ -142,5 +152,21 @@
 
   .custom-textarea {
     min-height: 80px;
+  }
+
+  .time-input .d-flex {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    align-items: flex-start !important;
+  }
+
+  .hours,
+  .minutes {
+    width: 100% !important; /* dropdown più larghi e facili da usare */
+  }
+
+  /* Per gli orari a destra */
+  .time-input.text-end .d-flex {
+    align-items: flex-end !important;
   }
 }
