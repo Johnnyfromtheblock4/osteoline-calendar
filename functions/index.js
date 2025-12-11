@@ -1,29 +1,41 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { initializeApp } = require("firebase-admin/app");
+const { getFirestore } = require("firebase-admin/firestore");
+const { getMessaging } = require("firebase-admin/messaging");
 
-admin.initializeApp();
+initializeApp();
 
-exports.sendEventNotification = functions.firestore
-    .document("events/{eventId}")
-    .onCreate(async (snap, context) => {
+exports.sendEventNotification = onDocumentCreated(
+  "events/{eventId}",
+  async (event) => {
+    const snap = event.data;
+    if (!snap) return;
 
-        const event = snap.data();
+    const data = snap.data();
 
-        // fetch all users with token
-        const usersSnap = await admin.firestore().collection("users").get();
-        const tokens = usersSnap.docs
-            .map(doc => doc.data().fcmToken)
-            .filter(t => !!t);
+    const db = getFirestore();
 
-        if (tokens.length === 0) return null;
+    // Recupera tutti gli utenti con un fcmToken
+    const usersSnap = await db.collection("users").get();
+    const tokens = usersSnap.docs
+      .map((doc) => doc.data().fcmToken)
+      .filter((t) => !!t);
 
-        const payload = {
-            notification: {
-                title: `Nuovo evento: ${event.title}`,
-                body: `${event.createdByName} ha creato un evento in ${event.room} alle ${event.startTime}`,
-                icon: "/osteoline-calendar-logo.png",
-            },
-        };
+    if (tokens.length === 0) {
+      console.log("Nessun token disponibile");
+      return;
+    }
 
-        return admin.messaging().sendToDevice(tokens, payload);
+    const messaging = getMessaging();
+
+    await messaging.sendEachForMulticast({
+      tokens,
+      notification: {
+        title: `Nuovo evento: ${data.title}`,
+        body: `${data.createdByName} ha creato un evento in ${data.room} alle ${data.startTime}`,
+      },
     });
+
+    console.log("Notifiche inviate a:", tokens.length);
+  }
+);

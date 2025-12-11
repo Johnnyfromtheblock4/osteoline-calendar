@@ -29,7 +29,7 @@ export const EventProvider = ({ children }) => {
           id: doc.id,
           ...doc.data(),
         }));
-        console.log("Eventi ricevuti da Firestore:", eventList); 
+        console.log("Eventi ricevuti da Firestore:", eventList);
         setEvents(eventList);
       },
       (error) => {
