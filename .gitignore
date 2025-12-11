@@ -15,6 +15,11 @@ dist-ssr
 # Environment
 .env
 
+# Firebase credentials (DO NOT COMMIT)
+osteoline-calendario-7bb84-firebase-adminsdk-*.json
+*.serviceAccount.json
+*.firebase-adminsdk*.json
+
 
 # Editor directories and files
 .vscode/*
