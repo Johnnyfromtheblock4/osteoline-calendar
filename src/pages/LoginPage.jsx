@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Auth.css";
+import { requestNotificationPermission } from "../notifications";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -12,9 +13,15 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/"); // vai alla homepage se login riuscito
+
+      // Richiesta permessi notifiche dopo login
+      await requestNotificationPermission();
+
+      navigate("/");
     } catch (err) {
       setError("Credenziali non valide");
     }
