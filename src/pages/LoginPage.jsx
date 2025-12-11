@@ -16,13 +16,17 @@ const LoginPage = () => {
     setError("");
 
     try {
+      console.log("🔥 Tentativo login...");
       await signInWithEmailAndPassword(auth, email, password);
+      console.log("🔥 Login riuscito!");
 
-      // Richiesta permessi notifiche dopo login
+      console.log("🔔 Ora richiedo permesso notifiche...");
       await requestNotificationPermission();
+      console.log("🔔 Permesso notifiche richiesto!");
 
       navigate("/");
     } catch (err) {
+      console.error("❌ Errore login:", err);
       setError("Credenziali non valide");
     }
   };
