@@ -2,3 +2,4 @@
 from = "/firebase-messaging-sw.js"
 to = "/firebase-messaging-sw.js"
 status = 200
+force = true
