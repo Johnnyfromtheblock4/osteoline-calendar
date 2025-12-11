@@ -5,7 +5,7 @@ import { auth, db } from "./firebase";
 
 export const requestNotificationPermission = async () => {
   try {
-    // 1) Controllo supporto base
+    // Controllo supporto base
     if (typeof window === "undefined" || !("Notification" in window)) {
       console.warn("Questo browser non supporta le Notification API");
       alert("Questo browser non supporta le notifiche push.");
@@ -14,7 +14,7 @@ export const requestNotificationPermission = async () => {
 
     console.log("🔔 Stato permesso iniziale:", Notification.permission);
 
-    // 2) Se è già DENIED, Safari/Chrome non mostrerà più il popup
+    // Se è già DENIED, Safari/Chrome non mostrerà più il popup
     if (Notification.permission === "denied") {
       console.warn("Permesso notifiche già NEGATO.");
       alert(
@@ -24,7 +24,7 @@ export const requestNotificationPermission = async () => {
       return;
     }
 
-    // 3) Chiedo il permesso
+    // Chiedo il permesso
     const permission = await Notification.requestPermission();
     console.log("🔔 Risultato richiesta permessi:", permission);
     alert("Risultato richiesta permessi: " + permission);
@@ -34,7 +34,7 @@ export const requestNotificationPermission = async () => {
       return;
     }
 
-    // 4) Ottengo il token da FCM
+    // Ottengo il token da FCM
     const token = await getToken(messaging, {
       vapidKey:
         "BOwUCzR_z__GxuEgovB6Aa0HsqsyY-NvkgeVsrLBa8stvEQsx0MweJ4EkvUQkVrRdfrYMAisFfNdzzKETWk2PU0",

@@ -1,7 +1,6 @@
 {
   "name": "Osteoline Calendario",
   "short_name": "Osteoline",
-  "description": "Calendario eventi Osteoline con notifiche push.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
